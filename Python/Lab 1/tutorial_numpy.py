@@ -123,13 +123,14 @@ question6()
 def question7():
     string7 = "1,2,3,4"
     numbers = [float(n) for n in string7.split(',')]
+
     # print(numbers)
 
     array7 = np.array(numbers)
     for x in range(99):
         array7 = np.vstack((array7, numbers))
 
-    print(array7)
-    print(np.shape(array7))
+    # print(array7)
+    # print(np.shape(array7))
 
 question7()
