@@ -27,3 +27,25 @@ strategy = np.zeros(apple.shape)
 print(strategy)
 
 # 1 == buy, 0 == do nothing, -1 == sell
+
+for x in range(len(apple)):
+    if x < 3:
+        strategy[x] = 0
+    elif(np.average(apple[x-3:x-1]) < apple[x]):
+        strategy[x] = -1
+    elif(np.average(apple[x-3:x-1]) > apple[x]):
+        strategy[x] = 1
+    else:
+        strategy[x] = 0
+        
+print(strategy)
+
+profits = 0
+for x in range(len(strategy)):
+    if x == -1:
+        profits += apple[x]
+    elif x == 1:
+        profits -= apple[x]
+    else:
+        pass
+print(profits)

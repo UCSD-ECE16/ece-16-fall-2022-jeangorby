@@ -59,7 +59,7 @@ def question1():
     random_list = [0, 10, 4, 12]
     array1 = np.array(random_list)
 
-    # print("array1 - 20 = ", array1 - 20)
+    print("array1 - 20 = ", array1 - 20)
     # print("shape = ", np.shape(array1 - 20))
     # Subtracting 20 from the entire array subtracts 20 from every element in the array
 
