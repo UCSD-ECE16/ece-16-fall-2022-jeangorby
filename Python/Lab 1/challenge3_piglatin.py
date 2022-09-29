@@ -11,7 +11,14 @@ def english_to_pig_latin(word):
     result = ""
     index = 0
     for x in word:
-        if x.lower() not in vowels and x.lower() == 'y':
+        if '-' in word:
+            result = word
+            words = word.split('-')
+            # print(words)
+            for x in words:
+                result = result.replace(x, english_to_pig_latin(x))
+            break
+        elif x.lower() not in vowels and x.lower() == 'y':
             # print(x)
             result = word[1:] + "y" + "ey"
             break
@@ -19,6 +26,8 @@ def english_to_pig_latin(word):
             # print(x)
             result = word[index:] + word[:index] + "ay"
             break
+        elif x.lower() in vowels and word[index - 1] == 'q':
+            print(True)
         elif x.lower() in vowels and index == 0:
             # print(x)
             result = word + "yay"
