@@ -1,5 +1,7 @@
 import numpy as np
 
+cash = 10000
+shares = 100
 # Daily Apple Stock Value from 01-01-2019 - 04-30-2019
 apple_stock = [
 38.38222885, 34.55907822, 36.03437042, 35.95417023, 36.63956451, 37.26177216, 
@@ -31,21 +33,51 @@ print(strategy)
 for x in range(len(apple)):
     if x < 3:
         strategy[x] = 0
-    elif(np.average(apple[x-3:x-1]) < apple[x]):
-        strategy[x] = -1
-    elif(np.average(apple[x-3:x-1]) > apple[x]):
+    elif(np.average(apple[x-3:x]) > apple[x]):
+        # print(np.average(apple[x-3:x-1]))
         strategy[x] = 1
+    elif(np.average(apple[x-3:x]) < apple[x]):
+        # print(np.average(apple[x-3:x-1]))
+        strategy[x] = -1
     else:
+        # print(np.average(apple[x-3:x-1]))
         strategy[x] = 0
         
 print(strategy)
 
 profits = 0
 for x in range(len(strategy)):
-    if x == -1:
+    if strategy[x] == -1:
         profits += apple[x]
-    elif x == 1:
+    elif strategy[x] == 1:
         profits -= apple[x]
+
+print(cash + profits)
+shares = shares - np.count_nonzero(strategy == -1) + np.count_nonzero(strategy == 1)
+print(shares)
+
+
+# Instead of taking the 3 day average, we take the 5 day average instead as prices could go up much higher within these few days
+for x in range(len(apple)):
+    if x < 5:
+        strategy[x] = 0
+    elif(np.average(apple[x-5:x]) > apple[x]):
+        # print(np.average(apple[x-3:x-1]))
+        strategy[x] = 1
+    elif(np.average(apple[x-5:x]) < apple[x]):
+        # print(np.average(apple[x-3:x-1]))
+        strategy[x] = -1
     else:
-        pass
-print(profits)
+        # print(np.average(apple[x-3:x-1]))
+        strategy[x] = 0
+
+profits = 0
+for x in range(len(strategy)):
+    if strategy[x] == -1:
+        profits += apple[x]
+    elif strategy[x] == 1:
+        profits -= apple[x]
+
+print(cash + profits)
+shares = shares - np.count_nonzero(strategy == -1) + np.count_nonzero(strategy == 1)
+print(shares)
