@@ -1,4 +1,5 @@
 import enchant 
+from spellchecker import SpellChecker
 import string
 d = enchant.Dict("en_US")
 
@@ -59,8 +60,14 @@ def english_to_pig_latin(word):
 def pig_latin_to_english(word): 
     result = ""
     size = len(word)
+    # Handles the case of hyphens through recursion
+    if '-' in word:
+        result = word
+        words = word.split('-')
+        for x in words:
+            result = result.replace(x, pig_latin_to_english(x))
     # Handles the case of starting with the letter y
-    if(word[size-3:].lower() == "yey"):
+    elif(word[size-3:].lower() == "yey"):
         result = word[size-3] + word[:size-3]
     # Handles the case of starting with Qu
     elif(word[size-4:].lower() == "quay"):
@@ -69,16 +76,25 @@ def pig_latin_to_english(word):
     elif(word[size-3:].lower() == "yay"):
         result = word[:size-3]
     elif(word[size-2:].lower() == "ay"):
+        # print(word.translate(str.maketrans('','',string.punctuation)))
         for x in range(size):
             # print(word[x-3:size-2] + word[:x-3])
-            print(d.check(word[x-3:size-2] + word[:x-3]))
-            if any(char in word for char in string.punctuation):
-                
-            elif(d.check(word[x-3:size-2] + word[:x-3])):
+
+            if(d.check(word[x-3:size-2] + word[:x-3])):
                 result = word[x-3:size-2] + word[:x-3]
                 break
-    return result
 
+        for x in range(size):
+            if any(char in word for char in string.punctuation):
+                no_punc = word.translate(str.maketrans('','',string.punctuation))
+                no_punc_size = len(no_punc)
+                if(d.check(no_punc[x-3:no_punc_size-2] + no_punc[:x-3])):
+                    result = word[x-3:size-2] + word[:x-3]
+                    break
+        
+        
+
+    return result
 # print(english_to_pig_latin("aloha"))
 # print(english_to_pig_latin("yellow"))
 # print(english_to_pig_latin("Switch"))
@@ -90,4 +106,4 @@ for i, word in enumerate(test_list):
     print(i+1, 'english -> p-latin:', out1)
     print(i+1, 'p-latin -> english:', out2)
 
-print(d.check("Numbers!"))
+print(any(char in "aren't" for char in string.punctuation))
