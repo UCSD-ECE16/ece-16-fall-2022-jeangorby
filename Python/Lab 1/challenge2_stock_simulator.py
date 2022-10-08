@@ -52,9 +52,9 @@ for x in range(len(strategy)):
     elif strategy[x] == 1:
         profits -= apple[x]
 
-print(cash + profits)
+print("Total Profit: ", (cash + profits))
 shares = shares - np.count_nonzero(strategy == -1) + np.count_nonzero(strategy == 1)
-print(shares)
+print("# of Shares left: ", shares)
 
 
 # Instead of taking the 3 day average, we take the 5 day average instead as prices could go up much higher within these few days
@@ -78,6 +78,6 @@ for x in range(len(strategy)):
     elif strategy[x] == 1:
         profits -= apple[x]
 
-print(cash + profits)
+print("Total Profits", cash + profits)
 shares = shares - np.count_nonzero(strategy == -1) + np.count_nonzero(strategy == 1)
-print(shares)
+print("# of shares left: ", shares)

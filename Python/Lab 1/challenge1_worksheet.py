@@ -64,11 +64,11 @@ new_list = ["PUSH FAILED", "BANANAS", "PUSH SUCCESS", "APPLES"]
 text = "SUCCESS"
 
 # 6
-# print("SUCCESS" in "SUCCESS")
-# print("SUCCESS" in "ijoisafjoijiojSUCCESS")
-# print("SUCCESS" == "ijoisafjoijiojSUCCESS")
-# print("SUCCESS" == text)
-# print("finish" in "ijoisafjoijioj\finish")
+print("SUCCESS" in "SUCCESS")
+print("SUCCESS" in "ijoisafjoijiojSUCCESS")
+print("SUCCESS" == "ijoisafjoijiojSUCCESS")
+print("SUCCESS" == text)
+print("finish" in "ijoisafjoijioj\finish")
 
 # 7
 for x in new_list:
