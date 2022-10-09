@@ -9,6 +9,10 @@ bool resetState = LOW;
 unsigned long startTime;
 unsigned long currentTime;
 unsigned long elapsedTime;
+unsigned long timeWhilePaused;
+unsigned long pauseTime;
+unsigned long buttonTime;
+unsigned long buttonPressTime;
 
 void setup() {
   // put your setup code here, to run once:
@@ -20,23 +24,51 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if(digitalRead(BUTTON_PIN) == LOW){
+
+  if(digitalRead(BUTTON_PIN) == LOW && startState == LOW){
     startState = !startState;
+    resetState = LOW;
     startTime = millis();
-    Serial.println("You clicked the button");
+    delay(500);
   }
-  else if(digitalRead(BUTTON_PIN) == LOW && startState){
+  else if(digitalRead(BUTTON_PIN) == LOW && startState == HIGH){
     pauseState = !pauseState;
+    pauseTime += timeWhilePaused;
+    timeWhilePaused = 0;
+    delay(500);
+  }
+  else if(buttonPressTime > 3000){
+    Serial.println("You have stopped the timer");
+    startState = LOW;
+    resetState = HIGH;
   }
 
-  if(startTime){
+  // Serial.println((String) "startState = " + startState);
+  // Serial.println((String) "pauseState = " + pauseState);
+  
+  if(pauseState){
+    timeWhilePaused = millis();
+    timeWhilePaused = timeWhilePaused - currentTime;
+    Serial.println((String) "Time While Paused = " + timeWhilePaused/1000);
+  }
+  else if(startState){
+    Serial.println((String) "Pause time = " + pauseTime/1000);
     currentTime = millis();
-    elapsedTime = currentTime - startTime;
-    Serial.println(elapsedTime);
+    elapsedTime = currentTime - startTime - pauseTime;
+    Serial.println((String) "Elapsed Time = " + elapsedTime/1000);
   }
-  else if(pauseState){
-    return;
+  else if(resetState){
+    int i = 0;
   }
 
+      buttonTime = 0;
+  while(digitalRead(BUTTON_PIN) == LOW && startState == HIGH){
+    buttonTime = millis();
+    buttonPressTime = buttonTime - currentTime;
+    if(buttonPressTime < 3000 && digitalRead(BUTTON_PIN) == HIGH){
+      pauseState = HIGH;
+    }
+    Serial.println((String) "Button Press Time = " + buttonPressTime/1000);
+  }
 
 }
