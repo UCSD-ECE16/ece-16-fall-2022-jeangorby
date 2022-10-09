@@ -29,18 +29,31 @@ void loop() {
     startState = !startState;
     resetState = LOW;
     startTime = millis();
+    pauseTime = 0;
+    timeWhilePaused = 0;
     delay(500);
   }
   else if(digitalRead(BUTTON_PIN) == LOW && startState == HIGH){
+    buttonPressTime = 0;
+    buttonTime = 0;
+    while(digitalRead(BUTTON_PIN) == LOW){
+      buttonTime = millis();
+      buttonPressTime = buttonTime - currentTime - timeWhilePaused;
+      // Serial.println((String) "Button Press Time = " + buttonPressTime/1000);
+    }
+    buttonTime = 0;
+
     pauseState = !pauseState;
     pauseTime += timeWhilePaused;
     timeWhilePaused = 0;
+
     delay(500);
   }
   else if(buttonPressTime > 3000){
     Serial.println("You have stopped the timer");
     startState = LOW;
-    resetState = HIGH;
+    pauseState = LOW;
+    buttonPressTime = 0;
   }
 
   // Serial.println((String) "startState = " + startState);
@@ -49,26 +62,16 @@ void loop() {
   if(pauseState){
     timeWhilePaused = millis();
     timeWhilePaused = timeWhilePaused - currentTime;
-    Serial.println((String) "Time While Paused = " + timeWhilePaused/1000);
+    // Serial.println((String) "Time While Paused = " + timeWhilePaused/1000);
   }
   else if(startState){
-    Serial.println((String) "Pause time = " + pauseTime/1000);
+    // Serial.println((String) "Pause time = " + pauseTime/1000);
     currentTime = millis();
     elapsedTime = currentTime - startTime - pauseTime;
-    Serial.println((String) "Elapsed Time = " + elapsedTime/1000);
-  }
-  else if(resetState){
-    int i = 0;
-  }
+    counter = elapsedTime/1000;
+    // Serial.println((String) "Elapsed Time = " + elapsedTime%100);
+    if(elapsedTime % 100 < 30){Serial.println((String) "Elapsed Time = " + counter);}
 
-      buttonTime = 0;
-  while(digitalRead(BUTTON_PIN) == LOW && startState == HIGH){
-    buttonTime = millis();
-    buttonPressTime = buttonTime - currentTime;
-    if(buttonPressTime < 3000 && digitalRead(BUTTON_PIN) == HIGH){
-      pauseState = HIGH;
-    }
-    Serial.println((String) "Button Press Time = " + buttonPressTime/1000);
   }
 
 }
