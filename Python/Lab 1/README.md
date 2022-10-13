@@ -73,7 +73,7 @@ This worksheet consists of multiple problems which tests the Python techniques t
 
 ## Challenge 2: Stock Simulator
 In this challenge, we create a simulator which buys and sells stocks for us for ultimate stonks. The strategy provided by this challenge essentially takes the average over the last 3 days and compares it to the current stock. If this average is lower, then we sell on that day. If it is higher then we buy on that day, otherwise we don't do anything. We do this by first creating a NumPy array of all the stock prices within a certain time period. <br>
-!["ndarray"](images\1.2.1.png)<br>
+!["ndarray"](.\images\1.2.1.png)<br>
 
 We then loop through all of the prices and take the average of the last 3 days and comparing it to the current days price as discussed in the current strategy. These comparisons and its results are stored in another NumPy array with the convention of ```1 == buy, 0 == do nothing, -1 == sell```. <br>
 !["strategy"](images\1.2.2.png)<br>
