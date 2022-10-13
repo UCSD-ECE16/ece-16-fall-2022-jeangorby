@@ -9,7 +9,7 @@ void setup() {
   // put your setup code here, to run once:
   setupAccelSensor();
   setupDisplay();
-  Serial.begin(9600);
+  Serial.begin(115200);
 
 }
 
