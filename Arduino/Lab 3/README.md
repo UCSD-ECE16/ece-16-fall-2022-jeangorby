@@ -23,9 +23,9 @@ The ESP32 is entirely capable of communicating in many ways, two of which includ
 
 ## Challenge 1: Gesture Detection
 In order to detect taps, we must observe what it looks like when a tap is made within the serial plotter. <br>
-![tap](.\images\tap.png) <br>
+![tap](./images/tap.png) <br>
 One can see that when a tap is made, the az values drop down significantly. One can also see the same value goes up when it bounces up. I have also found instances in which the value goes up rather than down when a tap is made. Therefore, I made sure to account for both without the possibility of double counting by creating a proper conditional statement for it. <br>
-
+### Discussing Weakneses
 ## Challenge 2: Gesture-Controlled Watch
 
 
