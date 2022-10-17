@@ -1,0 +1,62 @@
+from pyowm import OWM
+from datetime import datetime
+
+import serial # the PySerial library
+import time   # for timing purposes
+
+# current_time = datetime.now().strftime("%H:%M:%S")
+# current_date = datetime.now().strftime("%m/%d/%Y")
+
+def setup(serial_name, baud_rate):
+    ser = serial.Serial(serial_name, baudrate=baud_rate)
+    time.sleep(3)
+    return ser
+
+def close(ser):
+    ser.close()
+
+def send_message(ser, message):
+    if(message[-1] != '\n'):
+        message = message + '\n'
+    ser.write(message.encode('utf-8'))
+    # time.sleep(3)
+
+"""
+Receive a message from Serial and limit it to num_bytes (default of 50)
+"""
+def receive_message(ser, num_bytes=50):
+    if(ser.in_waiting > 0):
+        return ser.readline(num_bytes).decode('utf-8')
+    else:
+        return None
+
+def main(words):
+    ser = setup("COM4", 115200)
+    # ser = setup("Jean Gorby's ESP32", 115200)
+    send_message(ser, words)
+    time.sleep(1)
+    # message = receive_message(ser)
+    # print("Message: ", message)
+    close(ser)
+
+'''
+For Sending Message
+'''
+# def main():
+#     ser = setup("COM3", 115200)
+#     send_message(ser, "hello world\n")
+#     time.sleep(3)
+#     close(ser)
+
+"""
+Main entrypoint for the application
+"""
+if __name__== "__main__":
+    while(True):
+        main(datetime.now().strftime("%H:%M:%S"))
+        main(datetime.now().strftime("%m/%d/%Y")) 
+
+owm = OWM('6b5a03f43f957a00da5b35d1aeeddf2f').weather_manager()
+weather = owm.weather_at_place('San Diego,CA,US').weather
+
+# print(weather.temperature('fahrenheit'))
