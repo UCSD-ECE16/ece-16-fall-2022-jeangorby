@@ -26,7 +26,25 @@ In order to detect taps, we must observe what it looks like when a tap is made w
 ![tap](./images/tap.png) <br>
 One can see that when a tap is made, the az values drop down significantly. One can also see the same value goes up when it bounces up. I have also found instances in which the value goes up rather than down when a tap is made. Therefore, I made sure to account for both without the possibility of double counting by creating a proper conditional statement for it. <br>
 ### Discussing Weakneses
-## Challenge 2: Gesture-Controlled Watch
+- The algorithm fails when the breadboard is upside down although I was only testing while holding it up rather than setting it down. Setting it down might mitigate the change in acceleration while I am holding it up.
+- The algorithm fails when the device is moving, especially vertically, as the algorithm simply watches out for the change in the z acceleration.
+- The algorithm can respond to external vibrations as long as the vibrations are strong enough to reach the set threshold. I found it takes me to mash my table in order for it to actually get affected.
+### Possible Solutions
+- Figure out when there is movement and not take any inputs until said movement has ended. This could find issues when the user wants to make an input whenever they are moving but this at least solves the problem of movement affecting input. 
+- A gyroscope sensor can be integrated with the device in order to detect changes in orientation. The program can compare current orientation with original orientation to see if it has moved so that it can still be used in any orientation.
 
+[Check out the tap detection in action here](https://youtube.com/shorts/FIzBD2DCRss?feature=share)
+
+## Challenge 2: Gesture-Controlled Watch
+By building on from the previous challenge, we can now create a countdown timer controlled entirely by gestures. In order to begin this challenge, I create a finite state machine which will visualize how the code is structured. <br>
+![fsm](./images/fsm.jpg) <br>
+*Note that ```reset==``` stands for when the machine is purposely reset.
+As you will see in the video, I was able to implement every feature besides the reset functionality. I have some code within the file (commented out) that shows my approach and it was slightly working but had flaws. When I hold down on the accelerometer, I noticed that there wasn't a lot of change with the waveform, at least not as drastic as tapping. I wasn't sure whether this was intended but I rolled with it and analyzed the waveform. I noticed that holding down the accelerometer actually increases the average z-axis acceleration and I used this to my advantage. I imported the smoothing library which uses a sliding window in order to take the average of the previous 10 az values. I use this average to determine whether I was in the range of holding down the button or not. In hindsight, I could probably have made it work better if I had just increased the window size, but nonetheless, my biggest problem came down to timing and the transition between states.
+
+[Here is a video of machine 90% working](https://youtube.com/shorts/nrFNVTuzIFQ?feature=share)
 
 ## Challenge 3: Wireless Weather Watch
+Unfortunately, I didn't have enough time due to poor time management in order to delve deep into this challenge. I was only about able to get the first two features of the watch, the current time and date, implemented. I used the datetime module and used the datetime object and its attributes and methods in order to grab the time now as well as date now. I have them cycling one after the other within the watchface. <br>
+If given more time, I definitely would have loved coming up with solutions regarding the whether and cycling through different locations but alas, lessons have been learned for the next lab.
+
+[Here is a video of the unfinished watch](https://youtube.com/shorts/8Q7Zi0oO7q4?feature=share)

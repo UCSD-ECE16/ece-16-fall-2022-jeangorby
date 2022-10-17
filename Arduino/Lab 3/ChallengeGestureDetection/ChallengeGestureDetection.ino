@@ -51,7 +51,6 @@ void loop() {
       if(detectTaps(startTime, currentTime) == 2){
         numTaps = 0;
         state = BUZZ;
-        delay(2000);
       }
       else if(sampleSensors() && detectTaps(startTime, currentTime) != 0){
         numTaps += 1;
@@ -75,7 +74,6 @@ void loop() {
       if(detectTaps(startTime, currentTime) == 2){
         numTaps = 0;
         state = BUZZ;
-
       }
       else if(sampleSensors() && detectTaps(startTime, currentTime) == 1){
         numTaps += 1;
@@ -95,11 +93,11 @@ void loop() {
     case BUZZ:
       // turn the buzzer on
       if(sampleSensors() && detectTaps(startTime, currentTime) == 0){
-        // activateMotor(255);
-        buzzerOn = true;
+        activateMotor(255);
+        // buzzerOn = true;
       }
       else if(detectTaps(startTime, currentTime) != 0){
-        // deactivateMotor();
+        deactivateMotor();
         numTaps += 1;
         state = RESET;
         startTime = currentTime;
@@ -124,18 +122,20 @@ int detectTaps(unsigned long startTime, unsigned long currentTime){
   // }
 
   // timeInFunction = 0;
+  // // While loop in order to keep track of when the button is getting pushed down
   // while(mySensor.get() > 2600){
   //   // Serial.println(mySensor.get());
   //   timeInFunction = millis();
   //   Serial.println(timeInFunction - startTime);
+  //   //  Checking if button is pushed down for two seconds
   //   if(timeInFunction - startTime > 2000){
   //     timeInFunction = 0;
   //     // delay(1000);
-  //     startTime = 0;
+  //     startTime = currentTime;
   //     return 2;
   //   }
   //   else{
-  //     startTime = 0;
+  //     startTime = currentTime;
   //     return 0;
   //   }
   // } 
