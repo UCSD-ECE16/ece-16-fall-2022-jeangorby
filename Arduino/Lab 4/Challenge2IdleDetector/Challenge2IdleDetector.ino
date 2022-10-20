@@ -11,6 +11,7 @@ void setup() {
 }
 
 void loop() {
+  //Commands: off, active, inactive_5, inactive_10
   String command = receiveMessage();
   if(command == "sleep") {
     sending = false;

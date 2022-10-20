@@ -6,7 +6,7 @@ import numpy as np
 
 if __name__ == "__main__":
   num_samples = 100               # 2 seconds of data @ 50Hz
-  refresh_time = 0.1              # update the plot every 0.1s (10 FPS)
+  refresh_time = 0.2              # update the plot every 0.1s (10 FPS)
 
   times = CircularList([], num_samples)
   ax = CircularList([], num_samples)
@@ -60,26 +60,26 @@ if __name__ == "__main__":
         if (current_time - previous_time > refresh_time):
           previous_time = current_time
           
-          plt.cla()
-          plt.plot(delta_x)
-          plt.plot(delta_y)
-          plt.plot(delta_z)
-
-
-        #   plt.subplot(311)
         #   plt.cla()
-        #   plt.title("Delta Z")
+        #   plt.plot(delta_x)
+        #   plt.plot(delta_y)
         #   plt.plot(delta_z)
 
-        #   plt.subplot(312)
-        #   plt.cla()
-        #   plt.title("Delta Y")
-        #   plt.plot(delta_y)
 
-        #   plt.subplot(313)
-        #   plt.cla()
-        #   plt.title("Delta X")
-        #   plt.plot(delta_x)
+          plt.subplot(311)
+          plt.cla()
+          plt.title("Delta Z")
+          plt.plot(delta_z)
+
+          plt.subplot(312)
+          plt.cla()
+          plt.title("Delta Y")
+          plt.plot(delta_y)
+
+          plt.subplot(313)
+          plt.cla()
+          plt.title("Delta X")
+          plt.plot(delta_x)
 
           plt.show(block=False)
           plt.pause(0.001)

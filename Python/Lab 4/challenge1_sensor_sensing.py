@@ -6,14 +6,14 @@ import numpy as np
 
 if __name__ == "__main__":
   num_samples = 100               # 2 seconds of data @ 50Hz
-  refresh_time = 0.1              # update the plot every 0.1s (10 FPS)
+  refresh_time = 0.2             # update the plot every 0.1s (10 FPS)
 
   times = CircularList([], num_samples)
   ax = CircularList([], num_samples)
   ay = CircularList([], num_samples)
   az = CircularList([], num_samples)
 
-  N = 70
+  N = 50
 
 #   average_x, delta_x, L1, L2, and transformed
   average_x = CircularList([], num_samples)
@@ -43,13 +43,13 @@ if __name__ == "__main__":
         ay.add(int(m3))
         az.add(int(m4))
 
-        # average_x.add(np.mean(ax[:N]))
-        # delta_x.add(int(m2) - ax[num_samples - 2])
-        L2.add(np.sqrt((int(m2)**2)+(int(m3)**2)+(int(m4)**2)))
-        L1.add(np.abs(int(m2)) + np.abs(int(m3)) + np.abs(int(m4)))
+        average_x.add(np.mean(ax[:N]))
+        delta_x.add(int(m2) - ax[num_samples - 2])
+        # L2.add(np.sqrt((int(m2)**2)+(int(m3)**2)+(int(m4)**2)))
+        # L1.add(np.abs(int(m2)) + np.abs(int(m3)) + np.abs(int(m4)))
 
-        # Take the base 10 logarithm of the streamed z value
-        transformed.add(np.log10(int(m4)))
+        # # Take the base 10 logarithm of the streamed z value
+        # transformed.add(np.log10(int(m4)))
 
         # if enough time has elapsed, clear the axis, and plot az
         current_time = time()
@@ -60,24 +60,24 @@ if __name__ == "__main__":
         #   plt.plot(ay)
         #   plt.plot(az)
 
-        #   plt.subplot(211)
-        #   plt.cla()
-        #   plt.title("Average of X")
-        #   plt.plot(average_x)
-        #   plt.subplot(212)
-        #   plt.cla()
-        #   plt.title("Delta X")
-        #   plt.plot(delta_x)
+          plt.subplot(211)
+          plt.cla()
+          plt.title("Average of X")
+          plt.plot(average_x)
+          plt.subplot(212)
+          plt.cla()
+          plt.title("Delta X")
+          plt.plot(delta_x)
 
-          plt.subplot(311)
-          plt.cla()
-          plt.plot(L1)
-          plt.subplot(312)
-          plt.cla()
-          plt.plot(L2)
-          plt.subplot(313)
-          plt.cla()
-          plt.plot(transformed)
+        #   plt.subplot(311)
+        #   plt.cla()
+        #   plt.plot(L1)
+        #   plt.subplot(312)
+        #   plt.cla()
+        #   plt.plot(L2)
+        #   plt.subplot(313)
+        #   plt.cla()
+        #   plt.plot(transformed)
 
           plt.show(block=False)
           plt.pause(0.001)
