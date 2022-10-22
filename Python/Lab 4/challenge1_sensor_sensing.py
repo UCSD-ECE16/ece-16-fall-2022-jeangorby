@@ -62,11 +62,11 @@ if __name__ == "__main__":
 
           plt.subplot(211)
           plt.cla()
-          plt.title("Average of X")
+          plt.title("Average of Z")
           plt.plot(average_x)
           plt.subplot(212)
           plt.cla()
-          plt.title("Delta X")
+          plt.title("Delta Z")
           plt.plot(delta_x)
 
         #   plt.subplot(311)
