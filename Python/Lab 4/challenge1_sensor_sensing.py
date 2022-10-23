@@ -43,13 +43,14 @@ if __name__ == "__main__":
         ay.add(int(m3))
         az.add(int(m4))
 
+        # takes the accelerometer values and manipulates them 
         average_x.add(np.mean(ax[:N]))
-        # delta_x.add(int(m2) - ax[num_samples - 2])
-        # L2.add(np.sqrt((int(m2)**2)+(int(m3)**2)+(int(m4)**2)))
-        # L1.add(np.abs(int(m2)) + np.abs(int(m3)) + np.abs(int(m4)))
+        delta_x.add(int(m2) - ax[num_samples - 2])
+        L2.add(np.sqrt((int(m2)**2)+(int(m3)**2)+(int(m4)**2)))
+        L1.add(np.abs(int(m2)) + np.abs(int(m3)) + np.abs(int(m4)))
 
-        # # Take the base 10 logarithm of the streamed z value
-        # transformed.add(np.log10(int(m4)))
+        # Take the base 10 logarithm of the streamed z value
+        transformed.add(np.log10(int(m4)))
 
         # if enough time has elapsed, clear the axis, and plot az
         current_time = time()
@@ -58,12 +59,14 @@ if __name__ == "__main__":
 
           plt.subplot(211)
           plt.cla()
-          plt.title("ax")
-          plt.plot(ax)
+          plt.title("az")
+          plt.plot(az)
+          # this subplot is substituted with different transformations in order to 
+          # save performance 
           plt.subplot(212)
           plt.cla()
-          plt.title("average_x")
-          plt.plot(average_x)
+          plt.title("Log Transform")
+          plt.plot(transformed)
 
           plt.show(block=False)
           plt.pause(0.001)

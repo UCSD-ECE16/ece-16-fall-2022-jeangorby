@@ -64,6 +64,8 @@ if __name__ == "__main__":
             time_inactive = current_time
             delta_z.clear()
 
+          # Conditionals for each state
+          # check if the average ax value has exceeded a certain threshold to declare activity
           if(any(i>1940 for i in average_x) and on == True):
             comms.clear()
             comms.send_message("active")
