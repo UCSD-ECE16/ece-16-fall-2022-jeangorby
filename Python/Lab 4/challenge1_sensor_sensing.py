@@ -44,7 +44,7 @@ if __name__ == "__main__":
         az.add(int(m4))
 
         average_x.add(np.mean(ax[:N]))
-        delta_x.add(int(m2) - ax[num_samples - 2])
+        # delta_x.add(int(m2) - ax[num_samples - 2])
         # L2.add(np.sqrt((int(m2)**2)+(int(m3)**2)+(int(m4)**2)))
         # L1.add(np.abs(int(m2)) + np.abs(int(m3)) + np.abs(int(m4)))
 
@@ -55,29 +55,15 @@ if __name__ == "__main__":
         current_time = time()
         if (current_time - previous_time > refresh_time):
           previous_time = current_time
-          
-        #   plt.plot(ax)
-        #   plt.plot(ay)
-        #   plt.plot(az)
 
           plt.subplot(211)
           plt.cla()
-          plt.title("Average of Z")
-          plt.plot(average_x)
+          plt.title("ax")
+          plt.plot(ax)
           plt.subplot(212)
           plt.cla()
-          plt.title("Delta Z")
-          plt.plot(delta_x)
-
-        #   plt.subplot(311)
-        #   plt.cla()
-        #   plt.plot(L1)
-        #   plt.subplot(312)
-        #   plt.cla()
-        #   plt.plot(L2)
-        #   plt.subplot(313)
-        #   plt.cla()
-        #   plt.plot(transformed)
+          plt.title("average_x")
+          plt.plot(average_x)
 
           plt.show(block=False)
           plt.pause(0.001)

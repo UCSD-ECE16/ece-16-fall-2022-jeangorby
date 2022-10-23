@@ -35,7 +35,7 @@ if __name__ == "__main__":
         try:
           (m1, m2, m3, m4) = message.split(',')
         except ValueError:        # if corrupted data, skip the sample
-          continue
+          pass
 
         # add the new values to the circular lists
         times.add(int(m1))
