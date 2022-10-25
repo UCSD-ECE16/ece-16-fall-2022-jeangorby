@@ -23,6 +23,18 @@ def moving_average(x, win):
 def detrend(x, win=50):
   return x - moving_average(x, win)
 
+# Count the Number of Peaks
+def count_peaks(x, thresh_low, thresh_high):
+  peaks, _ = sig.find_peaks(x)
+  count = 0
+  locations = []
+  for peak in peaks:
+    if x[peak] >= thresh_low and x[peak] <= thresh_high:
+      count += 1
+      locations.append(peak)
+
+  return count, locations
+
 # Load the data as a 500x4 ndarray
 data = load_data("./data/8steps_10s_50hz.csv")
 t = data[:,0]
@@ -98,4 +110,15 @@ plt.subplot(211)
 plt.plot(dt)
 plt.subplot(212)
 plt.plot(lp2)
+plt.show()
+
+thresh_low = 25
+thresh_high = 100
+count, peaks = count_peaks(lp2, thresh_low, thresh_high)
+
+plt.plot(t, lp2)
+plt.title("Detected Peaks = %d" % count)
+plt.plot(t[peaks], lp2[peaks], 'rx')
+plt.plot(t, [thresh_low]*len(lp2), "b--")
+plt.plot(t, [thresh_high]*len(lp2), "b--")
 plt.show()
