@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Oct 25 00:03:39 2022
+
+@author: chuha
+"""
+
 from ECE16Lib.CircularList import CircularList
 import ECE16Lib.DSP as filt
 import numpy as np
@@ -9,16 +16,18 @@ class Pedometer:
   """
   Encapsulated class attributes (with default values)
   """
-  __steps = 0        # the current step count
-  __l1 = None        # CircularList containing L1-norm
-  __filtered = None  # CircularList containing filtered signal
-  __num_samples = 0  # The length of data maintained
-  __new_samples = 0  # How many new samples exist to process
-  __fs = 0           # Sampling rate in Hz
-  __b = None         # Low-pass coefficients
-  __a = None         # Low-pass coefficients
-  __thresh_low = 25   # Threshold from Tutorial 2
-  __thresh_high = 100 # Threshold from Tutorial 2
+  __steps = 0           # the current step count
+  __l1 = None           # CircularList containing L1-norm
+  __filtered = None     # CircularList containing filtered signal
+  __num_samples = 0     # The length of data maintained
+  __new_samples = 0     # How many new samples exist to process
+  __fs = 0              # Sampling rate in Hz
+  __b = None            # Low-pass coefficients
+  __a = None            # Low-pass coefficients
+  #__thresh_low = 25     # Threshold from Tutorial 2
+  #__thresh_high = 100   # Threshold from Tutorial 2
+  __thresh_low = 5
+  __thresh_high = 60
 
   """
   Initialize the class instance
@@ -29,7 +38,7 @@ class Pedometer:
     self.__fs = fs
     self.__l1 = CircularList(data, num_samples)
     self.__filtered = CircularList([], num_samples)
-    self.__b, self.__a = filt.create_filter(3, 1, "lowpass", fs)
+    self.__b, self.__a = filt.create_filter(3, 3, "lowpass", fs)
 
   """
   Add new samples to the data buffer
@@ -54,20 +63,28 @@ class Pedometer:
     x = np.array(self.__l1[ -self.__new_samples: ])
 
     # Filter the signal (detrend, LP, MA, etc…)
-    # l1 = filt.l1_norm(x)                      # Compute the L1-Norm
-    ma = filt.moving_average(x, 20)                   # Compute Moving Average
-    dt = filt.detrend(ma)                              # Detrend the Signal
-    # grad = filt.gradient(dt)                           # Compute the Gradient
-    # freqs, power = filt.psd(az, len(az), 50)           # Power Spectral Density
-    bl, al = filt.create_filter(3, 1, "lowpass", self.__fs)   # Low-pass Filter Design
-    lp = filt.filter(bl, al, dt)                       # Low-pass Filter Signal
+    
+    # Moving Average
+    ma = filt.moving_average(x, 15)
+    # Detrend
+    dt = filt.detrend(ma)
+    # Apply Low-Pass Filter (filter already created in __init__)
+    lp = filt.filter(self.__b, self.__a, dt)
+    # Gradient
+    gd = filt.gradient(lp)
+    # Moving Average
+    ma2 = filt.moving_average(gd, 15)
+    # Detrend
+    x = filt.detrend(ma2, 15)
+    x = 10*x
 
     # Store the filtered data
-    self.__filtered.add(lp.tolist())
+    self.__filtered.add(x.tolist())
 
     # Count the number of peaks in the filtered data
-    count, peaks = filt.count_peaks(lp,self.__thresh_low,self.__thresh_high)
+    count, peaks = filt.count_peaks(x,self.__thresh_low,self.__thresh_high)
 
+    count = count*2
     # Update the step count and reset the new sample count
     self.__steps += count
     self.__new_samples = 0

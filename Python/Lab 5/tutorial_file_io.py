@@ -64,7 +64,7 @@ def collect_samples():
 
 if __name__ == "__main__":
   # Make sure not to overwrite a file after saving!
-  filename = "./data/test5.csv"
+  filename = "./data/jump_test4.csv"
 
   # Get data from the MCU and save to file
   data = collect_samples()
