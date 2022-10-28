@@ -11,7 +11,7 @@ int buttonPin = 12;
 
 unsigned long currentTime;
 unsigned long previousTime;
-int processTime = 20;
+int processTime = 50;
 // // Initialize array to serve as a buffer for data to be sent to Python
 // int bufferSize = 512
 // String buffer[bufferSize];
@@ -32,9 +32,14 @@ void setup() {
 }
 
 void loop() {
-  // Sending data after button is pushed data 
-  while(state == 1){
+  // Sending data after button is pushed
+  if(state == 0){
+    String response = receiveMessage();
+    writeDisplay(response.c_str(), 0, true);
+  }
+  if(state == 1){
     currentTime = millis();
+    writeDisplay("Sending", 0, true);
     //Send and receive data to python
     if(!azBuffer.isEmpty() && currentTime - previousTime > processTime){
       previousTime = currentTime;
@@ -43,26 +48,22 @@ void loop() {
       sendMessage(response);
     }
     else if(azBuffer.isEmpty()){
-      state == 0;
+      sendMessage("Done");
+      state = 0;
+      recording = true;
     }
-    String response =  receiveMessage();
-    writeDisplay(response.c_str(), 0, true);
   }
 
   if(digitalRead(buttonPin) == LOW){
     state = 1;
+    recording = false;
     // Serial.println("button pushed");
     delay(200);
   }
 
   if(recording && sampleSensors()){
-    // sampleSensors();
-    // String response = String(sampleTime) + ",";
-    // response += String(ax) + "," + String(ay) + "," + String(az);
     axBuffer.push(ax);
     ayBuffer.push(ay);
     azBuffer.push(az);
-
-    // Serial.println(azBuffer.last());
   }
 }

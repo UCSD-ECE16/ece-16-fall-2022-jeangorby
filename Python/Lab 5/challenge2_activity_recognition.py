@@ -22,9 +22,11 @@ if __name__ == "__main__":
   comms.clear()                   # just in case any junk is in the pipes
   comms.send_message("wearable")  # begin sending data
 
+  recording = True
+
   try:
     previous_time = time()
-    while(True):
+    while(recording):
       message = comms.receive_message()
       print(message)
       if(message != None):
@@ -34,22 +36,14 @@ if __name__ == "__main__":
           continue
         # Collect data in the pedometer
         ped.add(int(m2),int(m3),int(m4))
-        # if enough time has elapsed, process the data and plot it
-        current_time = time()
-        if (current_time - previous_time > process_time):
-
-          previous_time = current_time
-
-          steps, peaks, filtered = ped.process()
-          # print("got hereeeeee")
-          print("Step count: {:d}".format(steps))
-          comms.send_message("Step count: {:d}".format(steps))
-
-          plt.cla()
-          plt.plot(int(m2))
-          # plt.title("Step Count: %d" % steps)
-          plt.show(block=False)
-          plt.pause(0.001)
+      elif(message == "Done"):
+        recording = False
+        
+    # After receiving all the data, process it
+    steps, peaks, filtered = ped.process()
+    # print("got hereeeeee")
+    print("Step count: {:d}".format(steps))
+    comms.send_message("Step count: {:d}".format(steps))
 
   except(Exception, KeyboardInterrupt) as e:
     print(e)                     # Exiting the program due to exception

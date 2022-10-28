@@ -8,6 +8,8 @@ Created on Tue Oct 25 00:03:39 2022
 from ECE16Lib.CircularList import CircularList
 import ECE16Lib.DSP as filt
 import numpy as np
+import scipy.signal as sig
+import matplotlib.pyplot as plt
 
 """
 A class to enable a simple step counter
@@ -26,7 +28,7 @@ class Pedometer:
   __a = None            # Low-pass coefficients
   #__thresh_low = 25     # Threshold from Tutorial 2
   #__thresh_high = 100   # Threshold from Tutorial 2
-  __thresh_low = 5
+  __thresh_low = 7
   __thresh_high = 60
 
   """
@@ -38,6 +40,7 @@ class Pedometer:
     self.__fs = fs
     self.__l1 = CircularList(data, num_samples)
     self.__filtered = CircularList([], num_samples)
+    #self.__peak = CircularList([], num_samples)
     self.__b, self.__a = filt.create_filter(3, 3, "lowpass", fs)
 
   """
@@ -63,20 +66,29 @@ class Pedometer:
     x = np.array(self.__l1[ -self.__new_samples: ])
 
     # Filter the signal (detrend, LP, MA, etc…)
-    
-    # Moving Average
-    ma = filt.moving_average(x, 15)
-    # Detrend
-    dt = filt.detrend(ma)
-    # Apply Low-Pass Filter (filter already created in __init__)
-    lp = filt.filter(self.__b, self.__a, dt)
-    # Gradient
-    gd = filt.gradient(lp)
-    # Moving Average
-    ma2 = filt.moving_average(gd, 15)
-    # Detrend
-    x = filt.detrend(ma2, 15)
-    x = 10*x
+    ma = filt.moving_average(x, 15)                 # Moving Average
+    dt = filt.detrend(ma)                           # Detrend
+    freq, power = filt.psd(dt, len(dt), self.__fs)  # psd
+
+    peaks, _ = sig.find_peaks(power)                # finding the peak of power distribution
+    loc = []
+    max_peak = 0
+    max_peak_loc = 0
+
+    for peak in peaks:
+      if(power[peak] > max_peak):
+        max_peak = power[peak]
+        max_peak_loc = peak
+
+    cutoff = freq[max_peak_loc] + 0.1*freq[max_peak_loc]
+    self.__b, self.__a = filt.create_filter(3, cutoff, "lowpass", self.__fs)
+    lp = filt.filter(self.__b, self.__a,  dt)       # Apply Low-Pass Filter
+
+    gd = filt.gradient(lp)                          # Gradient
+    ma2 = filt.moving_average(gd, 15)               # Moving Average
+    x = filt.detrend(ma2, 15)                       # Detrend
+
+    x = 10*x                                        # Scaling
 
     # Store the filtered data
     self.__filtered.add(x.tolist())
@@ -84,7 +96,8 @@ class Pedometer:
     # Count the number of peaks in the filtered data
     count, peaks = filt.count_peaks(x,self.__thresh_low,self.__thresh_high)
 
-    count = count*2
+    #self.__peak.add(peaks.tolist())
+
     # Update the step count and reset the new sample count
     self.__steps += count
     self.__new_samples = 0
