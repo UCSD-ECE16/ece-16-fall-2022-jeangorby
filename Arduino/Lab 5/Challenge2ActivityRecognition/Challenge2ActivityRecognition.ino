@@ -16,9 +16,8 @@ int processTime = 50;
 // int bufferSize = 512
 // String buffer[bufferSize];
 // int index = 0;
-// states: 0 == recording data, 1 == sending data
+// states: 
 int state = 0;
-
 
 void setup() {
   pinMode(buttonPin, INPUT);
@@ -33,10 +32,6 @@ void setup() {
 
 void loop() {
   // Sending data after button is pushed
-  if(state == 0){
-    String response = receiveMessage();
-    writeDisplay(response.c_str(), 0, true);
-  }
   if(state == 1){
     currentTime = millis();
     writeDisplay("Sending", 0, true);
@@ -45,10 +40,13 @@ void loop() {
       previousTime = currentTime;
       String response = String(axBuffer.shift()) + "," + String(ayBuffer.shift()) + "," + String(azBuffer.shift());
       // Serial.println(response);
+      // Serial.println(azBuffer.available());
+      // Serial.println(azBuffer.isEmpty());
       sendMessage(response);
     }
     else if(azBuffer.isEmpty()){
-      sendMessage("Done");
+      // sendMessage("Done");
+      writeDisplay("Done Sending", 0, true);
       state = 0;
       recording = true;
     }
@@ -57,7 +55,7 @@ void loop() {
   if(digitalRead(buttonPin) == LOW){
     state = 1;
     recording = false;
-    // Serial.println("button pushed");
+    Serial.println("button pushed");
     delay(200);
   }
 

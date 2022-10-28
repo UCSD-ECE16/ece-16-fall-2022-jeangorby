@@ -18,26 +18,26 @@ if __name__ == "__main__":
 
   ped = Pedometer(num_samples, fs, [])
 
-  comms = Communication("COM4", 115200)
+  comms = Communication("COM3", 115200)
   comms.clear()                   # just in case any junk is in the pipes
   comms.send_message("wearable")  # begin sending data
 
   recording = True
 
   try:
-    previous_time = time()
+    # previous_time = time()
     while(recording):
       message = comms.receive_message()
-      print(message)
       if(message != None):
+        print(message)
         try:
           (m2, m3, m4) = message.split(',')
         except ValueError:        # if corrupted data, skip the sample
           continue
         # Collect data in the pedometer
         ped.add(int(m2),int(m3),int(m4))
-      elif(message == "Done"):
-        recording = False
+      elif(message == "None"):
+        continue
         
     # After receiving all the data, process it
     steps, peaks, filtered = ped.process()
