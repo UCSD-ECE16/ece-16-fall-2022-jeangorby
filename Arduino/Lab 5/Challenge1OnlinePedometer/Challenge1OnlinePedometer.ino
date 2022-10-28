@@ -21,7 +21,7 @@ void loop() {
     writeDisplay("Wearable", 0, true);
   }
   else{
-    writeDisplay(command.c_str(), 2, true)
+    writeDisplay(command.c_str(), 2, false);
   }
   if(sending && sampleSensors()) {
     String response = String(sampleTime) + ",";

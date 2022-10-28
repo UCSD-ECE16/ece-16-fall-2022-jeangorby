@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Oct 25 00:03:15 2022
+
 @author: chuha
 """
 
@@ -18,7 +19,7 @@ if __name__ == "__main__":
 
   ped = Pedometer(num_samples, fs, [])
 
-  comms = Communication("COM4", 115200)
+  comms = Communication("COM6", 115200)
   comms.clear()                   # just in case any junk is in the pipes
   comms.send_message("wearable")  # begin sending data
 
@@ -46,7 +47,13 @@ if __name__ == "__main__":
 
           plt.cla()
           plt.plot(filtered)
-          plt.title("Step Count: %d" % steps)
+          #plt.title("Jean Gorby Step Count: %d" % steps)
+          plt.title("Haozhang Step Count: %d" % steps)
+
+          #plt.plot(peaks, filtered[peaks], 'rx')
+          plt.plot([7] * len(filtered), "b--")
+          plt.plot([60] * len(filtered), "b--")
+
           plt.show(block=False)
           plt.pause(0.001)
 
