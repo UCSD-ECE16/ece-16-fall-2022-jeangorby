@@ -41,7 +41,7 @@ def gradient(x):
 Compute the power spectral density of the signal
 """
 def psd(x, nfft, fs):
-  return sig.welch(x, nfft=nfft, fs=fs)
+  return sig.welch(x, nfft=nfft, fs=fs, nperseg=len(x))
 
 """
 Create either high-pass or low-pass filters

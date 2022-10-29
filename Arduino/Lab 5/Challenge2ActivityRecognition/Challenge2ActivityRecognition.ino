@@ -1,7 +1,7 @@
 #include <CircularBuffer.h>
-CircularBuffer<int,256> axBuffer;     // uses 2754 bytes 
-CircularBuffer<int,256> ayBuffer;     // uses 2754 bytes 
-CircularBuffer<int,256> azBuffer;     // uses 2754 bytes 
+CircularBuffer<int,256> axBuffer;     // uses 1377 bytes 
+CircularBuffer<int,256> ayBuffer;     // uses 1377 bytes 
+CircularBuffer<int,256> azBuffer;     // uses 1377 bytes 
 
 int sampleTime = 0;                   // Time of last sample (in Sampling tab)
 int ax = 0; int ay = 0; int az = 0;   // Acceleration (from readAccelSensor())
@@ -11,7 +11,7 @@ int buttonPin = 12;
 
 unsigned long currentTime;
 unsigned long previousTime;
-int processTime = 100;
+int processTime = 50;
 // // Initialize array to serve as a buffer for data to be sent to Python
 // int bufferSize = 512
 // String buffer[bufferSize];
@@ -46,11 +46,10 @@ void loop() {
         sendMessage(response);
       }
     }
-
     writeDisplay("Done Sending", 0, true);
     state = 0;
     recording = true;
-    sendMessage("Done");
+    sendMessage("71");
   }
 
   if(digitalRead(buttonPin) == LOW){
