@@ -27,11 +27,10 @@ if __name__ == "__main__":
   recording = True
   print("Connected to board successfully")
   done_flag = 0
-
+  counter = 0
   try:
     # previous_time = time()
     while(True):
-      
       if(recording):
         message = comms.receive_message()
         if(message != None):
@@ -48,18 +47,25 @@ if __name__ == "__main__":
             continue
           # Collect data in the pedometer
           ped.add(int(m2),int(m3),int(m4))
+          counter += 1
+          print(counter)
 
         if(done_flag == 71):
-          print("got to done if statement")
           recording = False
           done_flag = 0
       else:
         # After receiving all the data, process it
-        steps, peaks, filtered = ped.process()
+        steps, jumps, peaks, filtered = ped.process()
         # print("got hereeeeee")
-        step_count = step_count + steps
-        print("Step count: {:d}".format(step_count))
-        comms.send_message("Step count: {:d}".format(step_count))
+        step_count += steps
+        jump_count += jumps
+        print("Step count: {:d}, Jump count: {:d}".format(step_count, jump_count))
+        print("{:d},{:d}".format(step_count, jump_count))
+        comms.send_message("{:d},{:d}".format(step_count, jump_count))
+
+        # reset to 0 so they don't double the next set
+        steps = 0
+        jumps = 0
 
         # counter = 0
         recording = True

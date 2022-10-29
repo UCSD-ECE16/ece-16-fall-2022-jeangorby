@@ -30,12 +30,15 @@ class Pedometer:
   #__thresh_high = 100   # Threshold from Tutorial 2
   __thresh_low = 7
   __thresh_high = 60
+  __thresh_low_jump = 75
+  __thresh_high_jump = 220
 
   """
   Initialize the class instance
   """
   def __init__(self, num_samples, fs, data=None):
     self.__steps = 0
+    self.__jumps = 0
     self.__num_samples = num_samples
     self.__fs = fs
     self.__l1 = CircularList(data, num_samples)
@@ -96,14 +99,30 @@ class Pedometer:
     # Count the number of peaks in the filtered data
     count, peaks = filt.count_peaks(x,self.__thresh_low,self.__thresh_high)
 
+    plt.plot(lp)
+    plt.title("Detected Peaks = %d" % count)
+    plt.plot(lp[peaks], 'rx')
+    plt.plot([self.__thresh_low]*len(lp), "b--")
+    plt.plot([self.__thresh_high]*len(lp), "b--")
+    plt.show()
+
+    jump, peaks = filt.count_peaks(x,self.__thresh_low_jump, self.__thresh_high_jump)
+    plt.plot(lp)
+    plt.title("Detected Peaks = %d" % jump)
+    plt.plot(lp[peaks], 'rx')
+    plt.plot([self.__thresh_low_jump]*len(lp), "b--")
+    plt.plot([self.__thresh_high_jump]*len(lp), "b--")
+    plt.show()
+
     #self.__peak.add(peaks.tolist())
 
     # Update the step count and reset the new sample count
     self.__steps += count
+    self.__jumps += jump
     self.__new_samples = 0
 
-    # Return the step count, peak locations, and filtered data
-    return self.__steps, peaks, np.array(self.__filtered)
+    # Return the step count, jump count, peak locations, and filtered data
+    return self.__steps, self.__jumps, peaks, np.array(self.__filtered)
 
   """
   Clear the data buffers and step count
