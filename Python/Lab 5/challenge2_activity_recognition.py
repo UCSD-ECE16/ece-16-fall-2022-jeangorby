@@ -20,7 +20,6 @@ if __name__ == "__main__":
 
   comms = Communication("COM4", 115200)
   comms.clear()                   # just in case any junk is in the pipes
-  comms.send_message("wearable")  # begin sending data
 
   step_count = 0
   jump_count = 0
@@ -30,6 +29,7 @@ if __name__ == "__main__":
   counter = 0
   try:
     # previous_time = time()
+    comms.send_message("Step count: {:d},Jump count: {:d}".format(step_count, jump_count))
     while(True):
       if(recording):
         message = comms.receive_message()
@@ -57,11 +57,10 @@ if __name__ == "__main__":
         # After receiving all the data, process it
         steps, jumps, peaks, filtered = ped.process()
         # print("got hereeeeee")
-        step_count += steps
-        jump_count += jumps
-        print("Step count: {:d}, Jump count: {:d}".format(step_count, jump_count))
-        print("{:d},{:d}".format(step_count, jump_count))
-        comms.send_message("{:d},{:d}".format(step_count, jump_count))
+        step_count = steps
+        jump_count = jumps
+        print("Step count: {:d},Jump count: {:d}".format(step_count, jump_count))
+        comms.send_message("Step count: {:d}, Jump count: {:d}".format(step_count, jump_count))
 
         # reset to 0 so they don't double the next set
         steps = 0

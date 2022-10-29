@@ -31,7 +31,7 @@ class Pedometer:
   __thresh_low = 7
   __thresh_high = 60
   __thresh_low_jump = 75
-  __thresh_high_jump = 220
+  __thresh_high_jump = 400
 
   """
   Initialize the class instance
@@ -99,19 +99,20 @@ class Pedometer:
     # Count the number of peaks in the filtered data
     count, peaks = filt.count_peaks(x,self.__thresh_low,self.__thresh_high)
 
-    plt.plot(lp)
+    t = np.arange(1, 251, 1)
+    plt.plot(t, x)
     plt.title("Detected Peaks = %d" % count)
-    plt.plot(lp[peaks], 'rx')
-    plt.plot([self.__thresh_low]*len(lp), "b--")
-    plt.plot([self.__thresh_high]*len(lp), "b--")
+    plt.plot(t[peaks],x[peaks], 'rx')
+    plt.plot(t, [self.__thresh_low]*len(x), "b--")
+    plt.plot(t, [self.__thresh_high]*len(x), "b--")
     plt.show()
 
     jump, peaks = filt.count_peaks(x,self.__thresh_low_jump, self.__thresh_high_jump)
-    plt.plot(lp)
+    plt.plot(t, x)
     plt.title("Detected Peaks = %d" % jump)
-    plt.plot(lp[peaks], 'rx')
-    plt.plot([self.__thresh_low_jump]*len(lp), "b--")
-    plt.plot([self.__thresh_high_jump]*len(lp), "b--")
+    plt.plot(t[peaks],x[peaks], 'rx')
+    plt.plot(t,[self.__thresh_low_jump]*len(x), "b--")
+    plt.plot(t,[self.__thresh_high_jump]*len(x), "b--")
     plt.show()
 
     #self.__peak.add(peaks.tolist())
