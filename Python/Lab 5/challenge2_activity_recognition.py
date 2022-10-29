@@ -18,12 +18,14 @@ if __name__ == "__main__":
 
   ped = Pedometer(num_samples, fs, [])
 
-  comms = Communication("COM3", 115200)
+  comms = Communication("COM4", 115200)
   comms.clear()                   # just in case any junk is in the pipes
   comms.send_message("wearable")  # begin sending data
 
   recording = True
+  print("Connected to board successfully")
 
+  counter = 0
   try:
     # previous_time = time()
     while(recording):
@@ -36,9 +38,13 @@ if __name__ == "__main__":
           continue
         # Collect data in the pedometer
         ped.add(int(m2),int(m3),int(m4))
-      elif(message == "None"):
-        continue
-        
+        counter = counter + 1
+
+      if(counter == 256):
+        print("got to done if statement")
+        recording = False
+
+    print("Got out of loop")
     # After receiving all the data, process it
     steps, peaks, filtered = ped.process()
     # print("got hereeeeee")
