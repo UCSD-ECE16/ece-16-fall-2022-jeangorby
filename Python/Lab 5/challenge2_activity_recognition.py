@@ -26,7 +26,7 @@ if __name__ == "__main__":
   recording = True
   print("Connected to board successfully")
   done_flag = 0
-  counter = 0
+
   try:
     # previous_time = time()
     comms.send_message("Step count: {:d},Jump count: {:d}".format(step_count, jump_count))
@@ -36,19 +36,20 @@ if __name__ == "__main__":
         if(message != None):
           print(message)
 
+          # Check if MCU is done sending data
           try:
             done_flag = int(message)
           except ValueError:
             pass
-
+          
+          # Parse through the MCU received data
           try:
             (m2, m3, m4) = message.split(',')
           except ValueError:        # if corrupted data, skip the sample
             continue
+
           # Collect data in the pedometer
           ped.add(int(m2),int(m3),int(m4))
-          counter += 1
-          print(counter)
 
         if(done_flag == 71):
           recording = False
@@ -56,15 +57,12 @@ if __name__ == "__main__":
       else:
         # After receiving all the data, process it
         steps, jumps, peaks, filtered = ped.process()
-        # print("got hereeeeee")
+
+        # Update step and jump count and send it to the MCU
         step_count = steps
         jump_count = jumps
         print("Step count: {:d},Jump count: {:d}".format(step_count, jump_count))
-        comms.send_message("Step count: {:d}, Jump count: {:d}".format(step_count, jump_count))
-
-        # reset to 0 so they don't double the next set
-        steps = 0
-        jumps = 0
+        comms.send_message("Step count: {:d},Jump count: {:d}".format(step_count, jump_count))
 
         # counter = 0
         recording = True

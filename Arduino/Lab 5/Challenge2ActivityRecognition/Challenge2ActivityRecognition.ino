@@ -12,15 +12,8 @@ int buttonPin = 12;
 unsigned long currentTime;
 unsigned long previousTime;
 int processTime = 10;
-// // Initialize array to serve as a buffer for data to be sent to Python
-// int bufferSize = 512
-// String buffer[bufferSize];
-// int index = 0;
-// states: 
+
 int state = 0;
-int step_count = 0;
-int jump_count = 0;
-String count = "";
 
 void setup() {
   pinMode(buttonPin, INPUT);
@@ -34,8 +27,7 @@ void setup() {
 }
 
 void loop() {
-  // count = "Step count: " + String(step_count) + ",Jump count: " + String(jump_count);
-  // writeDisplayCSV(count.c_str(), 1);
+  // Updates the OLED screen when new counts come from Python
   String response = receiveMessage();
   if(response != "None"){
     writeDisplayCSV(response.c_str(), 1);
@@ -49,10 +41,8 @@ void loop() {
       currentTime = millis();
       if(currentTime - previousTime > processTime){
         previousTime = currentTime;
+        // Organize data into one string to send to Python
         String response = String(axBuffer.shift()) + "," + String(ayBuffer.shift()) + "," + String(azBuffer.shift());
-        // Serial.println(response);
-        // Serial.println(azBuffer.available());
-        // Serial.println(azBuffer.isEmpty());
         sendMessage(response);
       }
     }
@@ -62,13 +52,14 @@ void loop() {
     sendMessage("71");
   }
 
+  // Check if button has been pushed in order to start the process for sending data
   if(digitalRead(buttonPin) == LOW){
     state = 1;
     recording = false;
-    // Serial.println("button pushed");
     delay(200);
   }
 
+  // Continuously update the buffer unless the MCU is sending data
   if(recording && sampleSensors()){
     axBuffer.push(ax);
     ayBuffer.push(ay);

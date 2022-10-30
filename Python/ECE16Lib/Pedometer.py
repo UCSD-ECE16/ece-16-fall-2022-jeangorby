@@ -30,7 +30,7 @@ class Pedometer:
   #__thresh_high = 100   # Threshold from Tutorial 2
   __thresh_low = 7
   __thresh_high = 60
-  __thresh_low_jump = 75
+  __thresh_low_jump = 61
   __thresh_high_jump = 400
 
   """
@@ -97,23 +97,21 @@ class Pedometer:
     self.__filtered.add(x.tolist())
 
     # Count the number of peaks in the filtered data
-    count, peaks = filt.count_peaks(x,self.__thresh_low,self.__thresh_high)
+    count, peaks1 = filt.count_peaks(x,self.__thresh_low,self.__thresh_high)
 
-    t = np.arange(1, 251, 1)
-    plt.plot(t, x)
-    plt.title("Detected Peaks = %d" % count)
-    plt.plot(t[peaks],x[peaks], 'rx')
-    plt.plot(t, [self.__thresh_low]*len(x), "b--")
-    plt.plot(t, [self.__thresh_high]*len(x), "b--")
-    plt.show()
+    # Added this for jump
+    jump, peaks2 = filt.count_peaks(x,self.__thresh_low_jump, self.__thresh_high_jump)
 
-    jump, peaks = filt.count_peaks(x,self.__thresh_low_jump, self.__thresh_high_jump)
-    plt.plot(t, x)
-    plt.title("Detected Peaks = %d" % jump)
-    plt.plot(t[peaks],x[peaks], 'rx')
-    plt.plot(t,[self.__thresh_low_jump]*len(x), "b--")
-    plt.plot(t,[self.__thresh_high_jump]*len(x), "b--")
-    plt.show()
+    # t = np.arange(1, 251, 1)
+    # plt.plot(t, x)
+    # plt.title("Step vs. Jump")
+    # plt.plot(t[peaks1],x[peaks1], 'rx')
+    # plt.plot(t[peaks2],x[peaks2], 'rx')
+    # plt.plot(t, [self.__thresh_low]*len(x), "b--")
+    # plt.plot(t, [self.__thresh_high]*len(x), "b--")
+    # plt.plot(t,[self.__thresh_low_jump]*len(x), "b--")
+    # plt.plot(t,[self.__thresh_high_jump]*len(x), "b--")
+    # plt.show()
 
     #self.__peak.add(peaks.tolist())
 
