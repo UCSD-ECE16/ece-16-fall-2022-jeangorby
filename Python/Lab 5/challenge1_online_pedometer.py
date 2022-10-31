@@ -41,7 +41,7 @@ if __name__ == "__main__":
         if (current_time - previous_time > process_time):
           previous_time = current_time
 
-          steps, peaks, filtered = ped.process()
+          steps, jumps, peaks, filtered = ped.process()
           print("Step count: {:d}".format(steps))
           comms.send_message("Step count: {:d}".format(steps))
 
