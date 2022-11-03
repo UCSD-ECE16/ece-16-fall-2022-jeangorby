@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 # Load the data as a 500x2 ndarray and extract the 2 arrays
-data = np.genfromtxt("./data/A15955623/A15955623_10_84.csv", delimiter=",")
+data = np.genfromtxt("./data/A15955623/A15955623_10_87.csv", delimiter=",")
 t = data[:,0]
 t = (t - t[0])/1e3
 ppg = data[:,1]

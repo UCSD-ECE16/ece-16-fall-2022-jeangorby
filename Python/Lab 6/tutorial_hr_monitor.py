@@ -3,13 +3,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Load the data as a 500x2 ndarray and extract the 2 arrays
-data = np.genfromtxt("./data/ramsink_01_13.csv", delimiter=",")
+data = np.genfromtxt("./data/A15955623/A15955623_01_75.csv", delimiter=",")
 t = data[:,0]
 t = (t - t[0])/1e3
 ppg = data[:,1]
 
 # Test the Heart Rate Monitor with offline data
-hr_monitor = HRMonitor(500, 50)
+hr_monitor = HRMonitor(3000, 50)
 hr_monitor.add(t, ppg)
 hr, peaks, filtered = hr_monitor.process()
 
