@@ -19,7 +19,7 @@ def collect_samples():
   times = CircularList([], num_samples)
   ppg = CircularList([], num_samples)
 
-  comms = Communication("COM3", 115200)
+  comms = Communication("COM4", 115200)
   try:
     comms.clear() # just in case any junk is in the pipes
     # wait for user and then count down

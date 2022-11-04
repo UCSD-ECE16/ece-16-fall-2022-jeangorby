@@ -17,7 +17,7 @@ class HRMonitor:
   __num_samples = 0  # The length of data maintained
   __new_samples = 0  # How many new samples exist to process
   __fs = 0           # Sampling rate in Hz
-  __thresh = 0.45     # New Threshold
+  __thresh = 0.5     # New Threshold
 
   """
   Initialize the class instance
@@ -95,6 +95,12 @@ class HRMonitor:
 
     b, a = filt.create_filter(3, cutoff, "lowpass", self.__fs)
     x = filt.filter(b, a,  x) 
+
+    x = filt.detrend(x, 25)
+    x = filt.moving_average(x, 5)
+
+    x = filt.gradient(x)
+    x = filt.normalize(x)
 
     # Store the filtered data
     self.__filtered.add(x.tolist())

@@ -3,11 +3,39 @@ from scipy import stats
 import matplotlib.pyplot as plt
 from ECE16Lib.HRMonitor import HRMonitor
 
-# ground_truth = # reference heart rates
-# estimates =    # estimated heart rates from your algorithm
+"""
+Function defined to get the heart rate using the heart rate monitor class
+by passing in data
+"""
+def eval_hr_monitor(data):
+    hr_monitor = HRMonitor(3000, 50)
+    t = data[:,0]
+    t = (t - t[0])/1e3
+    ppg = data[:,1]
 
-ground_truth = np.array([63, 56, 96, 79, 63, 120, 152, 111, 95, 57])
-estimates =    np.array([65, 54, 96, 71, 63, 127, 159, 115, 104, 54])
+    hr_monitor.add(t, ppg)
+    hr, peaks, filtered = hr_monitor.process()
+    return hr
+
+
+# retrieving all the data from the saved csv files
+data1 = np.genfromtxt("./data/A15955623/A15955623_01_75.csv", delimiter=",")
+data2 = np.genfromtxt("./data/A15955623/A15955623_04_75.csv", delimiter=",")
+data3 = np.genfromtxt("./data/A15955623/A15955623_06_80.csv", delimiter=",")
+data4 = np.genfromtxt("./data/A15955623/A15955623_08_102.csv", delimiter=",")
+data5 = np.genfromtxt("./data/A15955623/A15955623_10_87.csv", delimiter=",")
+
+# evaluating the heart rate
+hr1 = eval_hr_monitor(data1)
+hr2 = eval_hr_monitor(data2)
+hr3 = eval_hr_monitor(data3)
+hr4 = eval_hr_monitor(data4)
+hr5 = eval_hr_monitor(data5)
+
+# creating the ground truth and estimates array
+ground_truth = np.array([75,75,80,114,87])      # reference heart rates
+estimates =  np.array([hr1,hr2,hr3,hr4,hr5])    # estimated heart rates from your algorithm
+
 
 [R,p] = stats.pearsonr(ground_truth, estimates) # correlation coefficient
 
@@ -48,7 +76,3 @@ plt.ylabel("Difference between estimates and ground_truth (BPM)")
 plt.xlabel("Average of estimates and ground_truth (BPM)")
 plt.title("Bland-Altman Plot")
 plt.show()
-
-def eval_hr_monitor():
-    hr_monitor = HRMonitor(3000, 50)
-    return 0 

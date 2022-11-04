@@ -5,7 +5,7 @@ import numpy as np
 import scipy.signal as sig
 
 # Load the data as a 500x2 ndarray and extract the 2 arrays
-data = np.genfromtxt("./data/A15955623/A15955623_08_114.csv", delimiter=",")
+data = np.genfromtxt("./data/A15955623/A15955623_01_75.csv", delimiter=",")
 t = data[:,0]
 t = (t - t[0])/1e3
 ppg = data[:,1]
