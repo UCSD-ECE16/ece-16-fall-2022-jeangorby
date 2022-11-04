@@ -17,7 +17,7 @@ class HRMonitor:
   __num_samples = 0  # The length of data maintained
   __new_samples = 0  # How many new samples exist to process
   __fs = 0           # Sampling rate in Hz
-  __thresh = 0.7     # Threshold from Tutorial 2
+  __thresh = 0.45     # New Threshold
 
   """
   Initialize the class instance
@@ -65,28 +65,36 @@ class HRMonitor:
 
     # Filter the signal (feel free to customize!)
     x = filt.detrend(x, 25)
-    x = filt.moving_average(x, 25)
+    x = filt.moving_average(x, 5)
 
-    # freq, power = filt.psd(x, len(x), self.__fs)  # psd
-
-    # peaks, _ = sig.find_peaks(power)                # finding the peak of power distribution
-    # loc = []
-    # max_peak = 0
-    # max_peak_loc = 0
-
-    # for peak in peaks:
-    #   if(power[peak] > max_peak):
-    #     max_peak = power[peak]
-    #     max_peak_loc = peak
-
-    # cutoff = freq[max_peak_loc] - 0.15*freq[max_peak_loc]
-    # print(cutoff)
-    # b, a = filt.create_filter(3, 1.2, "highpass", self.__fs)
-    # hp = filt.filter(b, a,  x) 
-
-    # x = filt.detrend(hp, 25)
     x = filt.gradient(x)
     x = filt.normalize(x)
+
+    freq, power = filt.psd(x, len(x), self.__fs)  # psd
+
+    peaks, _ = sig.find_peaks(power)                # finding the peak of power distribution
+    loc = []
+    max_peak = 0
+    max_peak_loc = 0
+    nearest_min = 0
+
+    for peak in peaks:
+      if(power[peak] > max_peak):
+        max_peak = power[peak]
+        max_peak_loc = peak
+
+    for i in range(len(freq)):
+      try:
+          if(power[i+max_peak_loc] < 0.0003):
+              nearest_min = i + max_peak_loc
+              break
+      except IndexError:
+          break
+
+    cutoff = freq[nearest_min]
+
+    b, a = filt.create_filter(3, cutoff, "lowpass", self.__fs)
+    x = filt.filter(b, a,  x) 
 
     # Store the filtered data
     self.__filtered.add(x.tolist())

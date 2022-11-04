@@ -1,9 +1,11 @@
+from math import inf
 import ECE16Lib.DSP as filt
 from matplotlib import pyplot as plt
 import numpy as np
+import scipy.signal as sig
 
 # Load the data as a 500x2 ndarray and extract the 2 arrays
-data = np.genfromtxt("./data/A15955623/A15955623_10_87.csv", delimiter=",")
+data = np.genfromtxt("./data/A15955623/A15955623_08_114.csv", delimiter=",")
 t = data[:,0]
 t = (t - t[0])/1e3
 ppg = data[:,1]
@@ -57,6 +59,42 @@ plt.title("Detected Peaks = %d" % count)
 plt.plot(t[peaks], norm[peaks], 'rx')
 plt.plot(t, [thresh]*len(norm), "b--")
 plt.show()
+
+freqs, power = filt.psd(norm, len(norm), 50)
+
+peaks, _ = sig.find_peaks(power)                # finding the peak of power distribution
+loc = []
+max_peak = 0
+max_peak_loc = 0
+nearest_min = 0
+
+for peak in peaks:
+  if(power[peak] > max_peak):
+    max_peak = power[peak]
+    max_peak_loc = peak
+
+for i in range(len(freqs)):
+    try:
+        if(power[i+max_peak_loc] < 0.001):
+            nearest_min = i + max_peak_loc
+            break
+    except IndexError:
+        break
+
+
+plt.plot(freqs, power)
+plt.title("Power Spectral Density")
+plt.plot(freqs[max_peak_loc], power[max_peak_loc], 'rx')
+plt.plot(freqs[nearest_min], power[nearest_min], 'bx')
+plt.show()
+
+cutoff = freqs[nearest_min]
+b, a = filt.create_filter(3, cutoff, "lowpass", 50)
+hp = filt.filter(b, a, norm) 
+
+plt.plot(hp)
+plt.show()
+
 
 # Compute the heart rate
 avg_beat_time = np.mean(np.diff(t[peaks]))

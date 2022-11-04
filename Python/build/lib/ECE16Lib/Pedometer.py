@@ -99,6 +99,7 @@ class Pedometer:
     # Count the number of peaks in the filtered data
     count, peaks1 = filt.count_peaks(x,self.__thresh_low,self.__thresh_high)
 
+    # Added this for jump
     jump, peaks2 = filt.count_peaks(x,self.__thresh_low_jump, self.__thresh_high_jump)
 
     # t = np.arange(1, 251, 1)
