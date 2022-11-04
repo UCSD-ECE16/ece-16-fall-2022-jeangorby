@@ -1,9 +1,11 @@
 import cv2
 import numpy as np
+import time
 import matplotlib.pyplot as plt
 plt.style.use('seaborn-whitegrid')
 
 ppg = []
+timestamps = []
 
 # cap = cv2.VideoCapture(0) # choose your appropriate camera!
 cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
@@ -11,7 +13,11 @@ while(True):
   _, frame = cap.read() 
 
   new_sample = frame.mean(axis=0).mean(axis=0)
-  new_sample = new_sample[0] # replace the ? with index of the RED channel
+  new_sample = new_sample[2] # replace the ? with index of the RED channel
+
+  sample_time = time.time_ns()
+
+  timestamps.append(sample_time/(10**9))
   ppg.append(new_sample) # append new_sample to ppg
 
   cv2.imshow('Input', frame)
@@ -24,8 +30,12 @@ cv2.destroyAllWindows()
 fig = plt.figure()
 ax = plt.axes()
 
-p = ppg[10:] # remove the first few points because of auto-exposure
+p = ppg[10:]
 
-x = np.linspace(0, 1, len(p))
-ax.plot(x, p)
+t = np.array(timestamps[10:]) # so we can easily subtract the first time
+t = t - t[0]
+ax.set_xlabel("time(s)")
+ax.set_ylabel("Red Channel Value")
+
+ax.plot(t, p)
 plt.show()
