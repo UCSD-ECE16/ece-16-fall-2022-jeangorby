@@ -162,3 +162,5 @@ To generalize it ever more so that we can find our heart rate, we can plot the s
 Back to the challenge, the difficulty with translating from the Photodector board from the arduino to a webcam, is that the data is inherently different. The magnitude of the red values for instance are not at all the same, with the Photodetector able to read a much wider range of values. It is pertinent that the values across both be consistent. In terms of the ppg readings, this one didn't need much tweaking at all as the signal processing we have created generalizes fairly well with any magnitude of data. The biggest challenge was ensuring that the time sampled also makes sense in the context of the HRMonitor class. We need to make sure that we are scaling it correctly as well as making sure it is updated real time using Pythons time functions. 
 
 [Check out the working webcam HR monitor here](https://youtube.com/shorts/8mMSu-u9tbU?feature=share)
+
+[Here is my partner doing](https://youtube.com/shorts/H40cg8N4fR8?feature=share)
