@@ -54,7 +54,12 @@ class HRMonitor:
   """
   def compute_heart_rate(self, peaks):
     t = np.array(self.__time)
-    return 60 / np.mean(np.diff(t[peaks]))
+
+    check = 60 / np.mean(np.diff(t[peaks]))
+    if (check > 160):
+      return 0
+
+    return check
 
   """
   Process the new data to update step count
@@ -62,7 +67,7 @@ class HRMonitor:
   def process(self):
     # Grab only the new samples into a NumPy array
     x = np.array(self.__ppg[ -self.__new_samples: ])
-
+    
     # Filter the signal (feel free to customize!)
     x = filt.detrend(x, 25)
     x = filt.moving_average(x, 5)

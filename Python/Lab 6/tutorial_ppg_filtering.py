@@ -85,7 +85,7 @@ for i in range(len(freqs)):
 plt.plot(freqs, power)
 plt.title("Power Spectral Density")
 plt.plot(freqs[max_peak_loc], power[max_peak_loc], 'rx')
-plt.plot(freqs[nearest_min], power[nearest_min], 'bx')
+plt.plot(freqs[nearest_min], power[nearest_min], 'rx')
 plt.show()
 
 cutoff = freqs[nearest_min]

@@ -1,5 +1,5 @@
 // Global variables
-//int ax = 0; int ay = 0; int az = 0;    // Acceleration values recorded from the readAccelSensor() function
+int ax = 0; int ay = 0; int az = 0;      // Acceleration values recorded from the readAccelSensor() function
 int ppg = 0;                             // PPG from readPhotoSensor() (in Photodetector tab)
 int sampleTime = 0;                      // Time of last sample (in Sampling tab)
 bool sending;
@@ -28,7 +28,14 @@ void loop() {
     writeDisplay("Wearable", 0, true);
   }
   else{
-    writeDisplay(command.c_str(), 0, false);
+    if(command == "0"){
+      writeDisplay("Heartrate:", 0, false);
+      writeDisplay(command.c_str(), 1, true);
+    }
+    else{
+      writeDisplay("Heartrate:", 0, false);
+      writeDisplay(command.c_str(), 1, false);
+    }  
   }
 
   if(sending && sampleSensors()) {
