@@ -1,4 +1,8 @@
 from ECE16Lib.CircularList import CircularList
+from sklearn.mixture import GaussianMixture as GMM
+from sklearn.metrics import adjusted_mutual_info_score
+from scipy.stats import norm
+import glob
 import ECE16Lib.DSP as filt
 import numpy as np
 import scipy.signal as sig
@@ -10,14 +14,16 @@ class HRMonitor:
   """
   Encapsulated class attributes (with default values)
   """
-  __hr = 0           # the current heart rate
-  __time = None      # CircularList containing the time vector
-  __ppg = None       # CircularList containing the raw signal
-  __filtered = None  # CircularList containing filtered signal
-  __num_samples = 0  # The length of data maintained
-  __new_samples = 0  # How many new samples exist to process
-  __fs = 0           # Sampling rate in Hz
-  __thresh = 0.5     # New Threshold
+  __hr = 0                  # the current heart rate
+  __time = None             # CircularList containing the time vector
+  __ppg = None              # CircularList containing the raw signal
+  __filtered = None         # CircularList containing filtered signal
+  __num_samples = 0         # The length of data maintained
+  __new_samples = 0         # How many new samples exist to process
+  __fs = 0                  # Sampling rate in Hz
+  __thresh = 0.5            # New Threshold
+  __directory = ".\\data"   # Default directory
+  __gmm = None              # Saving the GMM within the class
 
   """
   Initialize the class instance
@@ -128,3 +134,103 @@ class HRMonitor:
     self.__time.clear()
     self.__ppg.clear()
     self.__filtered.clear()
+
+  """
+  Gaussian Mixture Model
+  """
+  # Filter the signal (as in the prior lab)
+  @staticmethod
+  def process_temp(x):
+    x = filt.detrend(x, 25)
+    x = filt.moving_average(x, 5)
+    x = filt.gradient(x)
+    return filt.normalize(x)
+  
+  # Estimate the heart rate from the user-reported peak 
+  @staticmethod
+  def get_hr(filepath, num_samples, fs):
+    count = int(filepath.split("_")[-1].split(".")[0])
+    seconds = num_samples / fs
+    return count / seconds * 60 # 60s in a minute
+
+  # Estimate the heart rate given GMM output labels
+  @staticmethod
+  def estimate_hr(labels, num_samples, fs):
+    peaks = np.diff(labels, prepend=0) == 1
+    count = sum(peaks)
+    seconds = num_samples / fs
+    hr = count / seconds * 60 # 60s in a minute
+    return hr, peaks
+
+  # Estimate the sampling rate from the time vector
+  @staticmethod
+  def estimate_fs(times):
+    return 1 / np.mean(np.diff(times))
+
+  # Retrieve a list of the names of the subjects
+  @staticmethod
+  def get_subjects(directory):
+    filepaths = glob.glob(directory + "\\*")
+    return [filepath.split("\\")[-1] for filepath in filepaths]
+
+  # Retrieve a data file, verifying its FS is reasonable
+  def get_data(self, directory, subject, trial, fs):
+    search_key = "%s/%s/%s_%02d_*.csv" % (directory, subject, subject, trial)
+    filepath = glob.glob(search_key)[0]
+    t, ppg = np.loadtxt(filepath, delimiter=',', unpack=True)
+    t = (t-t[0])/1e3
+    hr = self.get_hr(filepath, len(ppg), fs)
+
+    fs_est = self.estimate_fs(t)
+    # if(fs_est < fs-1 or fs_est > fs):
+    #   print("Bad data! FS=%.2f. Consider discarding: %s" % (fs_est,filepath))
+
+    return t, ppg, hr, fs_est
+
+  def train(self):
+    print("check")
+    fs = 50
+    subjects = self.get_subjects(self.__directory)
+    RMSE = 0
+    ground_truths = []
+    estimates = []
+
+    # Leave-One-Subject-Out-Validation
+    # 1) Exclude subject
+    # 2) Load all other data, process, concatenate
+    # 3) Train the GMM
+    # 4) Compute the histogram and compare with GMM
+    # 5) Test the GMM on excluded subject
+    for exclude in subjects:
+        print("Training - excluding subject: %s" % exclude)
+        train_data = np.array([])
+
+        for subject in subjects:
+            for trial in range(1,6):
+                try:
+                    t, ppg, hr, fs_est = self.get_data(self.__directory, subject, trial, fs)
+
+                    if subject != exclude:
+                        train_data = np.append(train_data, self.process_temp(ppg))
+                except(IndexError) as e:
+                    pass
+
+        # Train the GMM
+        train_data = train_data.reshape(-1,1) # convert from (N,1) to (N,) vector
+
+        self.__gmm = GMM(n_components=2).fit(train_data)
+
+        # Compare the histogram with the GMM to make sure it is a good fit
+        # plt.hist(train_data, 100, density=True)
+        # plot_gaussian(gmm.weights_[0], gmm.means_[0], gmm.covariances_[0])
+        # plot_gaussian(gmm.weights_[1], gmm.means_[1], gmm.covariances_[1])
+        # plt.show()
+  
+  def predict(self):  
+    hr, peaks, filtered = self.process()
+
+    labels = self.__gmm.predict(filtered.reshape(-1,1))
+
+    hr_est, peaks = self.estimate_hr(labels, len(self.__ppg), self.__fs)
+
+    return hr_est
