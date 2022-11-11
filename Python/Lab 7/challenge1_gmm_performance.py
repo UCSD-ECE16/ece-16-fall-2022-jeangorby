@@ -10,7 +10,6 @@ from scipy import stats
 
 # The GMM Import
 from sklearn.mixture import GaussianMixture as GMM
-from sklearn.metrics import adjusted_mutual_info_score
 
 # Import for Gaussian PDF
 from scipy.stats import norm
@@ -110,8 +109,10 @@ if __name__ == "__main__":
 
         # Test the GMM on excluded subject
         print("Testing - all trials of subject: %s" % exclude)
-
+        ground_truth_per_trial = []
+        estimates_per_trial = []
         for trial in range(1,6):
+
             try:
                 t, ppg, hr, fs_est = get_data(directory, exclude, trial, fs)
                 test_data = process(ppg)
@@ -122,6 +123,9 @@ if __name__ == "__main__":
                 print("File: %s_%s: HR: %3.2f, HR_EST: %3.2f" % (exclude,trial,hr,hr_est))
 
                 # ground truth: hr, estimate: hr_est
+                ground_truth_per_trial.append(hr)
+                estimates_per_trial.append(hr_est)
+
                 ground_truths.append(hr)
                 estimates.append(hr_est)
                 # plt.plot(t, test_data)
@@ -129,6 +133,19 @@ if __name__ == "__main__":
                 # plt.show()
             except(IndexError) as e:
                 pass
+        
+        ground_truth_per_trial = np.array(ground_truth_per_trial)
+        estimates_per_trial = np.array(estimates_per_trial)
+        dif = ground_truth_per_trial - estimates_per_trial         # take the difference between ground_truth and estimates
+
+        plt.title("Difference Visualized with a Dot Plot")
+        plt.xlabel("Ground Truth - Estimate")
+        plt.ylabel("Trial Number")
+        plt.scatter(ground_truth_per_trial, np.arange(1, 6), label='col1')
+        plt.scatter(estimates_per_trial, np.arange(1, 6), label='col2')
+        plt.hlines(y = np.arange(1, 6), xmin = ground_truth_per_trial, xmax = estimates_per_trial, zorder=0, linewidth=1.5, color='k')
+        plt.show()
+      
 
     ground_truths = np.array(ground_truths)
     estimates = np.array(estimates)
@@ -173,5 +190,3 @@ if __name__ == "__main__":
     plt.xlabel("Average of estimates and ground_truth (BPM)")
     plt.title("Bland-Altman Plot")
     plt.show()
-
-    print ("NMI: ", adjusted_mutual_info_score(ground_truths, estimates))
