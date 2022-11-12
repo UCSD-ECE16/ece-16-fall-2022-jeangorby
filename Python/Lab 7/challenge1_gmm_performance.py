@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
                 hr_est, peaks = estimate_hr(labels, len(ppg), fs)
                 print("File: %s_%s: HR: %3.2f, HR_EST: %3.2f" % (exclude,trial,hr,hr_est))
-
+                print(hr-hr_est)
                 # ground truth: hr, estimate: hr_est
                 ground_truth_per_trial.append(hr)
                 estimates_per_trial.append(hr_est)
@@ -138,13 +138,13 @@ if __name__ == "__main__":
         estimates_per_trial = np.array(estimates_per_trial)
         dif = ground_truth_per_trial - estimates_per_trial         # take the difference between ground_truth and estimates
 
-        plt.title("Difference Visualized with a Dot Plot")
-        plt.xlabel("Ground Truth - Estimate")
-        plt.ylabel("Trial Number")
-        plt.scatter(ground_truth_per_trial, np.arange(1, 6), label='col1')
-        plt.scatter(estimates_per_trial, np.arange(1, 6), label='col2')
-        plt.hlines(y = np.arange(1, 6), xmin = ground_truth_per_trial, xmax = estimates_per_trial, zorder=0, linewidth=1.5, color='k')
-        plt.show()
+        # plt.title("Difference Visualized with a Dot Plot for %s" % exclude)
+        # plt.xlabel("Ground Truth - Estimate")
+        # plt.ylabel("Trial Number")
+        # plt.scatter(ground_truth_per_trial, np.arange(1, 6), label='col1')
+        # plt.scatter(estimates_per_trial, np.arange(1, 6), label='col2')
+        # plt.hlines(y = np.arange(1, 6), xmin = ground_truth_per_trial, xmax = estimates_per_trial, zorder=0, linewidth=1.5, color='k')
+        # plt.show()
       
 
     ground_truths = np.array(ground_truths)
@@ -164,7 +164,7 @@ if __name__ == "__main__":
 
     plt.ylabel("Estimated HR (BPM)")
     plt.xlabel("Reference HR (BPM)")
-    plt.title("Correlation Plot: Coefficient (R) = {:.2f}".format(R))
+    plt.title("Correlation Plot: Coefficient (R) = {:.2f}, RMSE = %2f".format(R) %RMSE)
 
     avg =  ground_truths + estimates / 2    # take the average between each element of the ground_truth and
                                             # estimates arrays and you should end up with another array
