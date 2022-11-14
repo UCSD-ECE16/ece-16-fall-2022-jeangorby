@@ -5,6 +5,7 @@ import glob
 import numpy as np
 import ECE16Lib.DSP as filt
 import matplotlib.pyplot as plt
+import scipy.signal as sig
 
 # The GMM Import
 from sklearn.mixture import GaussianMixture as GMM
@@ -43,10 +44,44 @@ def estimate_fs(times):
 
 # Filter the signal (as in the prior lab)
 def process(x):
-  x = filt.detrend(x, 25)
-  x = filt.moving_average(x, 5)
-  x = filt.gradient(x)
-  return filt.normalize(x)
+      # Filter the signal (feel free to customize!)
+    x = filt.detrend(x, 25)
+    x = filt.moving_average(x, 5)
+
+    x = filt.gradient(x)
+    x = filt.normalize(x)
+
+    freq, power = filt.psd(x, len(x), 50)  # psd
+
+    peaks, _ = sig.find_peaks(power)                # finding the peak of power distribution
+    loc = []
+    max_peak = 0
+    max_peak_loc = 0
+    nearest_min = 0
+
+    for peak in peaks:
+      if(power[peak] > max_peak):
+        max_peak = power[peak]
+        max_peak_loc = peak
+
+    for i in range(len(freq)):
+      try:
+          if(power[i+max_peak_loc] < 0.0003):
+              nearest_min = i + max_peak_loc
+              break
+      except IndexError:
+          break
+
+    cutoff = freq[nearest_min]
+
+    b, a = filt.create_filter(3, cutoff, "lowpass", 50)
+    x = filt.filter(b, a,  x) 
+
+    x = filt.detrend(x, 25)
+    x = filt.moving_average(x, 5)
+
+    x = filt.gradient(x)
+    return filt.normalize(x)
 
 # Plot each component of the GMM as a separate Gaussian
 def plot_gaussian(weight, mu, var):
