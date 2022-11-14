@@ -140,7 +140,7 @@ class HRMonitor:
   """
   # Filter the signal (as in the prior lab)
   @staticmethod
-  def process_temp(x):
+  def process_temp(x, fs):
     x = filt.detrend(x, 25)
     x = filt.moving_average(x, 5)
     x = filt.gradient(x)
@@ -157,9 +157,12 @@ class HRMonitor:
   @staticmethod
   def estimate_hr(labels, num_samples, fs):
     peaks = np.diff(labels, prepend=0) == 1
+
     count = sum(peaks)
     seconds = num_samples / fs
     hr = count / seconds * 60 # 60s in a minute
+    if(hr > 160):
+      return 0
     return hr, peaks
 
   # Estimate the sampling rate from the time vector
@@ -188,12 +191,8 @@ class HRMonitor:
     return t, ppg, hr, fs_est
 
   def train(self):
-    print("check")
     fs = 50
     subjects = self.get_subjects(self.__directory)
-    RMSE = 0
-    ground_truths = []
-    estimates = []
 
     # Leave-One-Subject-Out-Validation
     # 1) Exclude subject
@@ -211,7 +210,7 @@ class HRMonitor:
                     t, ppg, hr, fs_est = self.get_data(self.__directory, subject, trial, fs)
 
                     if subject != exclude:
-                        train_data = np.append(train_data, self.process_temp(ppg))
+                        train_data = np.append(train_data, self.process_temp(ppg, self.__fs))
                 except(IndexError) as e:
                     pass
 
@@ -231,6 +230,12 @@ class HRMonitor:
 
     labels = self.__gmm.predict(filtered.reshape(-1,1))
 
-    hr_est, peaks = self.estimate_hr(labels, len(self.__ppg), self.__fs)
+    try:
+      hr_est, peaks = self.estimate_hr(labels, len(self.__ppg), self.__fs)
+    except TypeError:
+      return -1
+    
+    if(hr_est < 40):
+      return -1
 
     return hr_est

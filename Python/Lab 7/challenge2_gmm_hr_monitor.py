@@ -8,12 +8,10 @@ import numpy as np
 if __name__ == "__main__":
   fs = 50                         # sampling rate
   num_samples = 500               # 5 seconds of data @ 50Hz
-  refresh_time = 10                # update heartrate every second
+  refresh_time = 12               # update heartrate every second
+  hr = 0
 
-  times = CircularList([], num_samples)
-  ppg = CircularList([], num_samples)
-
-  comms = Communication("COM3", 115200)
+  comms = Communication("COM4", 115200)
   comms.clear()                   # just in case any junk is in the pipes
   comms.send_message("wearable")  # begin sending data
 
@@ -27,34 +25,32 @@ if __name__ == "__main__":
       if(message != None):
         try:
           (m1, m2) = message.split(',')
-        except ValueError:        # if corrupted data, skip the sample
+        except (ValueError, TypeError):        # if corrupted data, skip the sample
           continue
 
         # add the new values to the circular lists
-        # hrmon.add(int(m1), int(m2))
-        times.add(int(m1))
-        ppg.add(int(m2))
+
+        try:
+          hrmon.add(int(m1), int(m2))
+        except ValueError:
+          continue
 
         # if enough time has elapsed, update the LED display with the current heartrate
         current_time = time()
         if (current_time - previous_time > refresh_time):
           previous_time = current_time
 
-          data = np.column_stack([times, ppg])
-          data_t = data[:, 0]
-          data_t = (data_t - data_t[0])/1e3
-          data_ppg = data[:, 1]
-
-        #   print(data_t)
-          hrmon.add(data_t, data_ppg)
-
           hr = hrmon.predict()
 
-          hr_round = round(hr, 3)
-          hr_str = str(hr_round)
-          print(hr_str)
+          if(hr != -1):
+            hr_round = round(hr, 3)
+            hr_str = str(hr_round)
+            print(hr_str)
+            comms.send_message(hr_str)
+          elif(hr == -1):
+            print("bad data")
+            comms.send_message("-1")
 
-          comms.send_message(hr_str)
 
   except(Exception, KeyboardInterrupt) as e:
     print(e) # exiting the program due to exception

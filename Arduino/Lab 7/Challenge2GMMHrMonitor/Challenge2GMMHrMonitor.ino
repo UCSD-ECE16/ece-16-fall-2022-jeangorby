@@ -13,12 +13,14 @@ void setup() {
   setupPhotoSensor();
   sending = false;
   writeDisplay("Sleep", 0, true);
+  Serial.begin(9600);
 }
 
 // put your main code here, to run repeatedly:
 // The main processing loop
 void loop() {
   String command = receiveMessage();
+
   if(command == "sleep") {
     sending = false;
     writeDisplay("Sleep", 0, true);
@@ -28,7 +30,7 @@ void loop() {
     writeDisplay("Wearable", 0, true);
   }
   else{
-    if(command == "0"){
+    if(command == "-1"){
       writeDisplay("Heartrate:", 0, false);
       writeDisplay(command.c_str(), 1, true);
     }

@@ -53,5 +53,17 @@ It can now be seen that the RMSE has been reduced significantly, and the correla
 
 ## Challenge 2: GMM HR Monitor
 
+### Task Description
+In this challenge, we must incorporate the machine learning model which we have been training into the same logic flow of measuring heart rate as with previous labs. The goal is to finally use the model in order to get predictions and output that as our official reading of the heart rate. <br>
+
+In order to do this, the ```HRMonitor.py``` class must be revised in order to account for the model. The first revision comes from introducing new methods, train() and predict(), which will be used to train the model and make predictions about the heart rate. These functions will have their own helper functions introduced in the previous tutorials which will also be implemented within the class itself. Most of these functions will come with the keyword ```@staticmethod``` because these are methods that will only be used within the class itself. There may be multiple ways to implement them within the class but this was the first one that came to mind. <br>
+
+In order to handle data which are either inadequate or of poor quality, we have implemented a few try-except clauses to keep track of this. Oftentimes, bad data leads to ValueErrors which are thrown and ends the program. This allows us to use these classes to keep track of them and make sure that the program continues even after bad data. The program will send a command of **"-1"** to be displayed on the OLED screen. This was done for the convenience of the challenge but can obviously changed to show something like "bad data". This feature is showcased in the video. <br>
+
+### YouTube Video Links
+
+Here is the video showcasing the program with a slightly elevated heart rate: https://youtu.be/5WKDBYbydfc
+
+Here is a video with a more rested heart rate: https://youtube.com/shorts/ch0Yo5p_ECA?feature=share
 
 ## Challenge 3: Complete Wearable!

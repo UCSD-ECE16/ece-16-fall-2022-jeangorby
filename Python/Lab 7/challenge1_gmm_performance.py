@@ -121,13 +121,14 @@ if __name__ == "__main__":
 
                 hr_est, peaks = estimate_hr(labels, len(ppg), fs)
                 print("File: %s_%s: HR: %3.2f, HR_EST: %3.2f" % (exclude,trial,hr,hr_est))
-                print(hr-hr_est)
+
                 # ground truth: hr, estimate: hr_est
                 ground_truth_per_trial.append(hr)
                 estimates_per_trial.append(hr_est)
 
                 ground_truths.append(hr)
                 estimates.append(hr_est)
+                print(hr-hr_est)
                 # plt.plot(t, test_data)
                 # plt.plot(t, peaks)
                 # plt.show()
