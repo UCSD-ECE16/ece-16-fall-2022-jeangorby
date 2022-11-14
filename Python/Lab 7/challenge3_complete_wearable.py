@@ -2,6 +2,7 @@ from ECE16Lib.Communication import Communication
 from ECE16Lib.CircularList import CircularList
 from ECE16Lib. Pedometer import Pedometer
 from ECE16Lib.HRMonitor import HRMonitor
+from ECE16Lib.IdleDetector import IdleDetector
 import numpy as np
 import time                                         # for timing purposes
 import pytz                                         # for getting time at different timezone
@@ -58,6 +59,7 @@ if __name__ == "__main__":
 
   ped = Pedometer(num_samples, fs, [])
   hrmon = HRMonitor(500, fs)
+  hrmon.train()
 
   try:
     pre_time = time.time()
@@ -98,11 +100,16 @@ if __name__ == "__main__":
           data_ppg = data[:, 1]
 
           hrmon.add(data_t, data_ppg)
-          hr, peaks, filtered = hrmon.process()
+          hr = hrmon.predict()
 
-          hr_round = round(hr, 3)
-          hr_str = str(hr_round)
+          if(hr == -1):
+            hr_str = "0"
+          else:
+            hr_round = round(hr, 3)
+            hr_str = str(hr_round)
+
           print(hr_str)
+
 
           message1 = get_time(time_list[0])                 # Weather operations
           message2 = str(date.today())

@@ -57,7 +57,7 @@ def process(x):
     loc = []
     max_peak = 0
     max_peak_loc = 0
-    nearest_min = 0
+    nearest_min = 0 
 
     for peak in peaks:
       if(power[peak] > max_peak):
