@@ -462,6 +462,9 @@ class SpaceInvaders(object):
                             self.bullets.add(rightbullet)
                             self.allSprites.add(self.bullets)
                             self.sounds['shoot2'].play()
+    # New feature
+    def paused(self):
+        return 0
 
     ''' ============================================================ '''
     def check_input_udp_socket(self):
@@ -492,6 +495,7 @@ class SpaceInvaders(object):
                         self.bullets.add(rightbullet)
                         self.allSprites.add(self.bullets)
                         self.sounds['shoot2'].play()
+
             else:
                 self.player.update_udp_socket(msg)
         except BlockingIOError:
@@ -618,6 +622,7 @@ class SpaceInvaders(object):
         for e in event.get():
             if self.should_exit(e):
                 sys.exit()
+
 
     def main(self):
         while True:

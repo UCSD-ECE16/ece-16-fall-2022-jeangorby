@@ -1,21 +1,17 @@
-// ----------------------------------------------------------------------------------------------------
-// =========== Communication Code for Messaging via Hardware Serial or Bluetooth ============
-// ----------------------------------------------------------------------------------------------------
-
 /*
  * Precompiler directive elegance: 0 == Serial, 1 == Bluetooth
  */
 #define USE_BT 1
 
 /*
- * This block allows us to use "Ser" throughout our codebase.
+ * This block allows us to use "Ser" throughout our codebase. 
  * This makes the code to be protocol-agnostic.
  * Whether using Bluetooth or USB Serial, we will reference it as Ser.
  */
 #if USE_BT
   #include "BluetoothSerial.h"
-  BluetoothSerial SerialBT;     // instantiate a BT object
-  #define Ser SerialBT          // substitute Ser for SerialBT
+  BluetoothSerial BTSerial;     // instantiate a BT object
+  #define Ser BTSerial          // substitute Ser for SerialBT
 #else
   #define Ser Serial            // substitute Ser for Serial
 #endif
@@ -25,7 +21,7 @@
  */
 void setupCommunication() {
   #if USE_BT
-    Ser.begin("BTDemo"); // any unique name for BT identification
+    Ser.begin("Jean Gorby's ESP32"); // any unique name for BT
   #else
     Ser.begin(115200);
   #endif
@@ -37,9 +33,9 @@ void setupCommunication() {
 String receiveMessage() {
   String message = "";
   if (Ser.available() > 0) {
-    while (true) { // loop forever until a newline is seen
+    while (true) {
       char c = Ser.read();
-      if (c != char(-1)) { // if there is a character in the buffer
+      if (c != char(-1)) {
         if (c == '\n')
           break;
         message += c;

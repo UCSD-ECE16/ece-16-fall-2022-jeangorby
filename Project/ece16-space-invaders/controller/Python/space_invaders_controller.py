@@ -3,6 +3,8 @@
 """
 
 from ECE16Lib.Communication import Communication
+import ECE16Lib.DSP as filt
+import numpy as np
 from time import sleep
 import socket, pygame
 
@@ -30,28 +32,44 @@ class PygameController:
 
     # 3. Forever collect orientation and send to PyGame until user exits
     print("Use <CTRL+C> to exit the program.\n")
+
     while True:
       message = self.comms.receive_message()
       if(message != None):
         command = None
-        message = int(message)
-        # if message == 0:
-        #   command = "FLAT"
-        # if message == 1:
-        #   command = "UP"
-        if message == 2:
+
+        try:
+          (ax, ay, az) = message.split(',')
+        except ValueError:        # if corrupted data, skip the sample
+          continue
+
+        orientation = filt.l1_norm(int(ax), int(ay), int(az))
+
+        if(orientation == 0):
           command = "FIRE"
-        elif message == 3:
-          command = "LEFT"
-        elif message == 4:
+        elif(orientation < 6150):
           command = "RIGHT"
+        elif(orientation > 6450):
+          command = "LEFT"
+        
+        # message = int(message)
+        # # if message == 0:
+        # #   command = "FLAT"
+        # # if message == 1:
+        # #   command = "UP"
+        # if message == 2:
+        #   command = "FIRE"
+        # elif message == 3:
+        #   command = "RIGHT"
+        # elif message == 4:
+        #   command = "LEFT"
 
         if command is not None:
           mySocket.send(command.encode("UTF-8"))
 
 
 if __name__== "__main__":
-  serial_name = "/dev/cu.BTDemo-ESP32SPP"
+  serial_name = "COM4"
   baud_rate = 115200
   controller = PygameController(serial_name, baud_rate)
 
