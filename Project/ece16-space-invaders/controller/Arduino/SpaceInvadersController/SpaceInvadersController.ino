@@ -48,11 +48,11 @@ void loop() {
 
   // Send the orientation of the board
   if(sending && press_checker()){
-    response = "0,0,0";
+    response = "0,0,0,-1";
     sendMessage(response);
   }
   else if(sending && sampleSensors()) {
-    response = String(ax) + "," + String(ay) + "," + String(az);
+    response = String(ax) + "," + String(ay) + "," + String(az) + "," + String(ppg);
     sendMessage(response);
   }
 }

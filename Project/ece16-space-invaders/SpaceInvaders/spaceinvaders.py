@@ -2,7 +2,7 @@
 
 # Space Invaders
 # Created by Lee Robinson
-
+import pygame
 from pygame import *
 import sys
 from os.path import abspath, dirname
@@ -16,6 +16,8 @@ mySocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 mySocket.bind((host, port))
 mySocket.setblocking(0)
 ''' ============================================================ '''
+
+pygame.font.init()
 
 BASE_PATH = abspath(dirname(__file__))
 FONT_PATH = BASE_PATH + '/fonts/'
@@ -373,6 +375,7 @@ class SpaceInvaders(object):
         self.life2 = Life(742, 3)
         self.life3 = Life(769, 3)
         self.livesGroup = sprite.Group(self.life1, self.life2, self.life3)
+        self.timePaused = 0
 
     def reset(self, score):
         self.player = Ship()
@@ -442,6 +445,9 @@ class SpaceInvaders(object):
             if self.should_exit(e):
                 sys.exit()
             if e.type == KEYDOWN:
+                # If p is clicked, the game will be paused
+                if e.key == K_p:
+                    self.paused()
                 if e.key == K_SPACE:
                     if len(self.bullets) == 0 and self.shipAlive:
                         if self.score < 1000:
@@ -464,7 +470,28 @@ class SpaceInvaders(object):
                             self.sounds['shoot2'].play()
     # New feature
     def paused(self):
-        return 0
+        temp = True
+        pauseStartTime = time.get_ticks()
+
+        while temp:
+            currentPausePeriod = time.get_ticks() - pauseStartTime
+            self.keys = key.get_pressed()
+            my_font = pygame.font.SysFont(FONT, 100)
+            img = my_font.render("GAME IS PAUSED",False, WHITE)
+            self.screen.blit(img, (100, 300))
+            for e in event.get():
+                if e.type == KEYDOWN:
+                    if e.key == K_p:
+                        temp = False
+                        self.timePaused += currentPausePeriod
+            try:
+                msg, _ = mySocket.recvfrom(1024) # receive 1024 bytes
+                msg = msg.decode('utf-8')
+                if msg == "PAUSE":
+                    break
+
+            except BlockingIOError:
+                pass # do nothing if there's no data
 
     ''' ============================================================ '''
     def check_input_udp_socket(self):
@@ -472,9 +499,13 @@ class SpaceInvaders(object):
             msg, _ = mySocket.recvfrom(1024) # receive 1024 bytes
             msg = msg.decode('utf-8')
             print("Command: " + msg)
+            
+            if msg == "PAUSE":
+                self.paused()
 
             if msg == "QUIT":
                 sys.exit()
+
             if msg == "FIRE":
                 if len(self.bullets) == 0 and self.shipAlive:
                     if self.score < 1000:
@@ -625,6 +656,7 @@ class SpaceInvaders(object):
 
 
     def main(self):
+        paused = False
         while True:
             if self.mainScreen:
                 self.screen.blit(self.background, (0, 0))
@@ -651,7 +683,7 @@ class SpaceInvaders(object):
 
             elif self.startGame:
                 if not self.enemies and not self.explosionsGroup:
-                    currentTime = time.get_ticks()
+                    currentTime = time.get_ticks() - self.timePaused
                     if currentTime - self.gameTimer < 3000:
                         self.screen.blit(self.background, (0, 0))
                         self.scoreText2 = Text(FONT, 20, str(self.score),
@@ -665,13 +697,15 @@ class SpaceInvaders(object):
                         ''' ============================================================ '''
                         self.check_input_udp_socket()
                         ''' ============================================================ '''
+
                     if currentTime - self.gameTimer > 3000:
                         # Move enemies closer to bottom
                         self.enemyPosition += ENEMY_MOVE_DOWN
                         self.reset(self.score)
                         self.gameTimer += 3000
                 else:
-                    currentTime = time.get_ticks()
+
+                    currentTime = time.get_ticks() - self.timePaused
                     self.play_main_music(currentTime)
                     self.screen.blit(self.background, (0, 0))
                     self.allBlockers.update(self.screen)
@@ -684,6 +718,7 @@ class SpaceInvaders(object):
                     ''' ============================================================ '''
                     self.check_input_udp_socket()
                     ''' ============================================================ '''
+
                     self.enemies.update(currentTime)
                     self.allSprites.update(self.keys, currentTime)
                     self.explosionsGroup.update(currentTime)
@@ -692,7 +727,7 @@ class SpaceInvaders(object):
                     self.make_enemies_shoot()
 
             elif self.gameOver:
-                currentTime = time.get_ticks()
+                currentTime = time.get_ticks() - self.timePaused
                 # Reset enemy starting position
                 self.enemyPosition = ENEMY_DEFAULT_POSITION
                 self.create_game_over(currentTime)

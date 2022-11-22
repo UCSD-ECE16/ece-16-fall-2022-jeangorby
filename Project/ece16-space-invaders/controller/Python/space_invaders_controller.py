@@ -5,7 +5,8 @@
 from ECE16Lib.Communication import Communication
 import ECE16Lib.DSP as filt
 import numpy as np
-from time import sleep
+from math import sqrt, atan
+from time import sleep, time
 import socket, pygame
 
 # Setup the Socket connection to the Space Invaders game
@@ -32,25 +33,51 @@ class PygameController:
 
     # 3. Forever collect orientation and send to PyGame until user exits
     print("Use <CTRL+C> to exit the program.\n")
-
+    X_ZERO = 1850
+    Y_ZERO = 1850
+    Z_ZERO = 1950
+    refresh_time = 0.01
+    previous_time = time()
     while True:
       message = self.comms.receive_message()
       if(message != None):
         command = None
-
         try:
-          (ax, ay, az) = message.split(',')
+          (ax, ay, az, ppg) = message.split(',')
         except ValueError:        # if corrupted data, skip the sample
           continue
+        
+        ax = int(ax)-X_ZERO
+        ay = int(ay)-Y_ZERO
+        az = int(az)-Z_ZERO
 
-        orientation = filt.l1_norm(int(ax), int(ay), int(az))
+        # X-Axis
+        result=sqrt(ay**2+az**2)
+        result=ax/result
+        accel_angle_x = atan(result)*180
 
-        if(orientation == 0):
+        # Y Axis
+        result=sqrt(ax**2+az**2)
+        result=ay/result
+        accel_angle_y = atan(result)*180
+
+        # print(accel_angle_x)
+        if(int(ppg) == -1):
+          print("i am taking shot")
           command = "FIRE"
-        elif(orientation < 6150):
-          command = "RIGHT"
-        elif(orientation > 6450):
-          command = "LEFT"
+          continue
+        
+        current_time = time()
+        if current_time - previous_time > refresh_time:
+          print(accel_angle_x)
+          previous_time = current_time
+          
+          if(int(ppg) < 5000):
+            command = "PAUSE"
+          elif(accel_angle_x < 0):
+            command = "RIGHT"
+          elif(accel_angle_x > 60):
+            command = "LEFT"
         
         # message = int(message)
         # # if message == 0:
@@ -69,7 +96,7 @@ class PygameController:
 
 
 if __name__== "__main__":
-  serial_name = "COM4"
+  serial_name = "COM3"
   baud_rate = 115200
   controller = PygameController(serial_name, baud_rate)
 
