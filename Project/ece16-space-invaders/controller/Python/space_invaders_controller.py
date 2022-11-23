@@ -60,15 +60,13 @@ class PygameController:
         result=sqrt(ax**2+az**2)
         result=ay/result
         accel_angle_y = atan(result)*180
+        current_time = time()
 
         # print(accel_angle_x)
         if(int(ppg) == -1):
           print("i am taking shot")
           command = "FIRE"
-          continue
-        
-        current_time = time()
-        if current_time - previous_time > refresh_time:
+        elif current_time - previous_time > refresh_time and command != "FIRE":
           print(accel_angle_x)
           previous_time = current_time
           
@@ -79,24 +77,13 @@ class PygameController:
           elif(accel_angle_x > 60):
             command = "LEFT"
         
-        # message = int(message)
-        # # if message == 0:
-        # #   command = "FLAT"
-        # # if message == 1:
-        # #   command = "UP"
-        # if message == 2:
-        #   command = "FIRE"
-        # elif message == 3:
-        #   command = "RIGHT"
-        # elif message == 4:
-        #   command = "LEFT"
 
         if command is not None:
           mySocket.send(command.encode("UTF-8"))
 
 
 if __name__== "__main__":
-  serial_name = "COM3"
+  serial_name = "COM4"
   baud_rate = 115200
   controller = PygameController(serial_name, baud_rate)
 
