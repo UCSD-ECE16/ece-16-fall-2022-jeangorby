@@ -15,6 +15,7 @@
 - We have implemented a way to play the entire game without using the keyboard at all as soon as all the python files are ran
 - In order to start game, the player must click the shoot button
 - To exit the game, the player must tilt their controller with the buttons facing opposite of them (currently proof of concept which works fine but can be changed)
+- Consequently, our implementation also ensures that the buffer is always empty when the game starts. Previously, the buffer can hold commands even before the game starts which can throw off the players. 
 
 
 ### Feature 1: Pause/Unpause (Working 100%)
