@@ -14,7 +14,8 @@ host = "127.0.0.1"
 port = 65432
 mySocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 mySocket.bind((host, port))
-mySocket.setblocking(0)
+mySocket.setblocking(False)
+
 ''' ============================================================ '''
 
 pygame.font.init()
@@ -376,6 +377,7 @@ class SpaceInvaders(object):
         self.life3 = Life(769, 3)
         self.livesGroup = sprite.Group(self.life1, self.life2, self.life3)
         self.timePaused = 0
+        self.sourceAddress = ""
 
     def reset(self, score):
         self.player = Ship()
@@ -499,9 +501,10 @@ class SpaceInvaders(object):
     ''' ============================================================ '''
     def check_input_udp_socket(self):
         try:
-            msg, _ = mySocket.recvfrom(1024) # receive 1024 bytes
+            msg, self.sourceAddress = mySocket.recvfrom(1024) # receive 1024 bytes
             msg = msg.decode('utf-8')
             print("Command: " + msg)
+
             
             if msg == "PAUSE":
                 self.paused()
@@ -584,6 +587,7 @@ class SpaceInvaders(object):
         self.screen.blit(self.enemy4, (299, 420))
 
     def check_collisions(self):
+
         sprite.groupcollide(self.bullets, self.enemyBullets, True, True)
 
         for enemy in sprite.groupcollide(self.enemies, self.bullets,
@@ -605,6 +609,15 @@ class SpaceInvaders(object):
 
         for player in sprite.groupcollide(self.playerGroup, self.enemyBullets,
                                           True, True).keys():
+            # Establish connection between the client and server
+            try:
+                msg, self.sourceAddress = mySocket.recvfrom(1024) # receive 1024 bytes
+            except BlockingIOError:
+                pass # do nothing if there's no data
+            
+            # Send HIT response if we get hit
+            mySocket.sendto("HIT".encode("utf-8"), self.sourceAddress) # send the message back
+
             if self.life3.alive():
                 self.life3.kill()
             elif self.life2.alive():

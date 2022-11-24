@@ -44,8 +44,13 @@ class PygameController:
     sens_counter = 0
 
     game_start = False
+
+    response = ""
     while True:
+      # Receive message from arduino
       message = self.comms.receive_message()
+
+      
       if(message != None):
         command = None
         try:
@@ -68,7 +73,7 @@ class PygameController:
         accel_angle_y = atan(result)*180
         current_time = time()
 
-        print(accel_angle_y)
+        # print(accel_angle_y)
         if int(ppg) == -1 and game_start == False:
           command = "START"
           game_start = True
@@ -105,6 +110,17 @@ class PygameController:
 
         if command is not None:
           mySocket.send(command.encode("UTF-8"))
+
+        # Receive response from the server
+        try:
+          response = mySocket.recv(1024)
+          response = response.decode("utf-8")
+          print("Response: ", response)
+        except BlockingIOError:
+          pass # do nothing if there's no data
+
+        if(response == "HIT"):
+          self.comms.send_message("HIT")
 
 
 
