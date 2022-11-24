@@ -480,6 +480,8 @@ class SpaceInvaders(object):
             # img = my_font.render("GAME IS PAUSED",False, WHITE)
             # self.screen.blit(img, (100, 300))
             for e in event.get():
+                if self.should_exit(e):
+                    sys.exit()
                 if e.type == KEYDOWN:
                     if e.key == K_p:
                         temp = False
