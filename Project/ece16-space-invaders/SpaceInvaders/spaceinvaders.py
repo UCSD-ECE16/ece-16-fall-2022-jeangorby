@@ -670,6 +670,23 @@ class SpaceInvaders(object):
                 self.enemy3Text.draw(self.screen)
                 self.enemy4Text.draw(self.screen)
                 self.create_main_menu()
+
+                try:
+                    msg, _ = mySocket.recvfrom(1024) # receive 1024 bytes
+                    msg = msg.decode('utf-8')
+                    if msg == "START":
+                        # Only create blockers on a new game, not a new round
+                        self.allBlockers = sprite.Group(self.make_blockers(0),
+                                                        self.make_blockers(1),
+                                                        self.make_blockers(2),
+                                                        self.make_blockers(3))
+                        self.livesGroup.add(self.life1, self.life2, self.life3)
+                        self.reset(0)
+                        self.startGame = True
+                        self.mainScreen = False
+                except BlockingIOError:
+                    pass # do nothing if there's no data
+
                 for e in event.get():
                     if self.should_exit(e):
                         sys.exit()

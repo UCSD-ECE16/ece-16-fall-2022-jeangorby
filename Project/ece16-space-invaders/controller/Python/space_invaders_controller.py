@@ -42,6 +42,8 @@ class PygameController:
     ppg_down = False
     sens = np.array([[-10, 60],[0,40],[-200,200]])
     sens_counter = 0
+
+    game_start = False
     while True:
       message = self.comms.receive_message()
       if(message != None):
@@ -66,29 +68,39 @@ class PygameController:
         accel_angle_y = atan(result)*180
         current_time = time()
 
-        print(accel_angle_x)
-
-        if int(ppg) < 7000 and ppg_down == False and int(ppg) != -1 and int(ppg) != -2:
-          ppg_down = True
-
-        if(int(ppg) == -2 and sens_counter < 2):
-          sens_counter = sens_counter + 1
-        elif(int(ppg) == -2):
-          sens_counter = 0
-
-        if(int(ppg) == -1):
-          command = "FIRE"
-        elif current_time - previous_time > refresh_time and command != "FIRE":
-          previous_time = current_time
+        print(accel_angle_y)
+        if int(ppg) == -1 and game_start == False:
+          command = "START"
+          game_start = True
+        elif game_start == True:
           
-          if(int(ppg) > 7000 and ppg_down == True):
-            ppg_down = False
-            command = "PAUSE"
-          # Sens 1: -10,60; sens 2: 0,40; sens 3: -200,200
-          elif(accel_angle_x < sens[sens_counter][0]):
-            command = "RIGHT"
-          elif(accel_angle_x > sens[sens_counter][1]):
-            command = "LEFT"
+          # PPG Debouncing
+          if int(ppg) < 7000 and ppg_down == False and int(ppg) != -1 and int(ppg) != -2:
+            ppg_down = True
+
+          # Keep track of which sensitivity profile is being used
+          if(int(ppg) == -2 and sens_counter < 2):
+            sens_counter = sens_counter + 1
+          elif(int(ppg) == -2 and game_start == True):
+            sens_counter = 0
+
+          # Prioritze firing over any other command
+          if(int(ppg) == -1):
+            command = "FIRE"
+          # Check for movement/pause/quit every refresh time
+          elif current_time - previous_time > refresh_time and command != "FIRE":
+            previous_time = current_time
+            
+            if(int(ppg) > 7000 and ppg_down == True):
+              ppg_down = False
+              command = "PAUSE"
+            # Sens 1: -10,60; sens 2: 0,40; sens 3: -200,200
+            elif(accel_angle_x < sens[sens_counter][0]):
+              command = "RIGHT"
+            elif(accel_angle_x > sens[sens_counter][1]):
+              command = "LEFT"
+            elif(accel_angle_y < -200):
+              command = "QUIT"
         
 
         if command is not None:

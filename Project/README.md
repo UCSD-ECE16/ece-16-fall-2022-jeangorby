@@ -10,7 +10,11 @@
 - Currently the movement is incredibly stiff. One needs to be exctly left or right in order to actually get movement.
 - Instead of checking for absolute orientation, we calculate the tilt degree using math.
 
-### Improvement 3: still need
+### Improvement 3: Removed the Need for Keyboard (Working 100%)
+- Straight out of the box, the player must start the game by clicking a button on their keyboard and if they want to quit the game they must hit escape
+- We have implemented a way to play the entire game without using the keyboard at all as soon as all the python files are ran
+- In order to start game, the player must click the shoot button
+- To exit the game, the player must tilt their controller with the buttons facing opposite of them (currently proof of concept which works fine but can be changed)
 
 
 ### Feature 1: Pause/Unpause (Working 100%)
