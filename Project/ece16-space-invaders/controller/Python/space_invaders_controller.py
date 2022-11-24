@@ -40,7 +40,8 @@ class PygameController:
     previous_time = time()
 
     ppg_down = False
-
+    sens = np.array([[-10, 60],[0,40],[-200,200]])
+    sens_counter = 0
     while True:
       message = self.comms.receive_message()
       if(message != None):
@@ -65,23 +66,28 @@ class PygameController:
         accel_angle_y = atan(result)*180
         current_time = time()
 
-        # print(accel_angle_x)
+        print(accel_angle_x)
 
-        if int(ppg) < 7000 and ppg_down == False and int(ppg) != -1:
+        if int(ppg) < 7000 and ppg_down == False and int(ppg) != -1 and int(ppg) != -2:
           ppg_down = True
+
+        if(int(ppg) == -2 and sens_counter < 2):
+          sens_counter = sens_counter + 1
+        elif(int(ppg) == -2):
+          sens_counter = 0
 
         if(int(ppg) == -1):
           command = "FIRE"
         elif current_time - previous_time > refresh_time and command != "FIRE":
-          print(int(ppg))
           previous_time = current_time
           
           if(int(ppg) > 7000 and ppg_down == True):
             ppg_down = False
             command = "PAUSE"
-          elif(accel_angle_x < -10):
+          # Sens 1: -10,60; sens 2: 0,40; sens 3: -200,200
+          elif(accel_angle_x < sens[sens_counter][0]):
             command = "RIGHT"
-          elif(accel_angle_x > 60):
+          elif(accel_angle_x > sens[sens_counter][1]):
             command = "LEFT"
         
 
