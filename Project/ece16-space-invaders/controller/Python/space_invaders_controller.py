@@ -121,6 +121,7 @@ class PygameController:
 
         if(response == "HIT"):
           self.comms.send_message("HIT")
+          response = ""
 
 
 

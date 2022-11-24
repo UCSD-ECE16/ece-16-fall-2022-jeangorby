@@ -25,6 +25,7 @@ void setup() {
   setupCommunication();
   setupDisplay();
   setupPhotoSensor();
+  setupMotor();
   pinMode(BUTTON_PIN, INPUT);
   pinMode(SENS_BUTTON, INPUT);
   sending = false;
@@ -50,6 +51,12 @@ void loop() {
   else if(command == "start") {
     sending = true;
     writeDisplay("Controller: On", 0, true);
+  }
+  else if(command == "HIT"){
+    activateMotor(127);
+    delay(1000);
+    deactivateMotor();
+    command == "START";
   }
 
   // Send the orientation of the board
