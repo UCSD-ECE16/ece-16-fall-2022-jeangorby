@@ -38,6 +38,9 @@ class PygameController:
     Z_ZERO = 1950
     refresh_time = 0.01
     previous_time = time()
+
+    ppg_down = False
+
     while True:
       message = self.comms.receive_message()
       if(message != None):
@@ -63,16 +66,20 @@ class PygameController:
         current_time = time()
 
         # print(accel_angle_x)
+
+        if int(ppg) < 7000 and ppg_down == False and int(ppg) != -1:
+          ppg_down = True
+
         if(int(ppg) == -1):
-          print("i am taking shot")
           command = "FIRE"
         elif current_time - previous_time > refresh_time and command != "FIRE":
-          print(accel_angle_x)
+          print(int(ppg))
           previous_time = current_time
           
-          if(int(ppg) < 5000):
+          if(int(ppg) > 7000 and ppg_down == True):
+            ppg_down = False
             command = "PAUSE"
-          elif(accel_angle_x < 0):
+          elif(accel_angle_x < -10):
             command = "RIGHT"
           elif(accel_angle_x > 60):
             command = "LEFT"
@@ -80,6 +87,7 @@ class PygameController:
 
         if command is not None:
           mySocket.send(command.encode("UTF-8"))
+
 
 
 if __name__== "__main__":

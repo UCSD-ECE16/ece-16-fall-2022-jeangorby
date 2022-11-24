@@ -476,9 +476,9 @@ class SpaceInvaders(object):
         while temp:
             currentPausePeriod = time.get_ticks() - pauseStartTime
             self.keys = key.get_pressed()
-            my_font = pygame.font.SysFont(FONT, 100)
-            img = my_font.render("GAME IS PAUSED",False, WHITE)
-            self.screen.blit(img, (100, 300))
+            # my_font = pygame.font.SysFont(FONT, 100)
+            # img = my_font.render("GAME IS PAUSED",False, WHITE)
+            # self.screen.blit(img, (100, 300))
             for e in event.get():
                 if e.type == KEYDOWN:
                     if e.key == K_p:
@@ -488,6 +488,7 @@ class SpaceInvaders(object):
                 msg, _ = mySocket.recvfrom(1024) # receive 1024 bytes
                 msg = msg.decode('utf-8')
                 if msg == "PAUSE":
+                    self.timePaused += currentPausePeriod
                     break
 
             except BlockingIOError:
