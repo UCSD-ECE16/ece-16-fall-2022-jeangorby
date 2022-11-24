@@ -23,11 +23,15 @@
 - Placing finger on photodetector again wil unpause the game
 - One can hit escape while paused if they want to exit the game
 
-### Feature 2: Changing sensitivity (Working 100%, can add oled screen component)
+### Feature 2: Changing sensitivity (Working 100%)
 - Using a second button, the player can change the sensitivity of the tilt
 - Sens option 1 is what we feel is the best, most comfortable sens
 - Sens option 2 is the most sensitive we can make it feel
 - Sens option 3 is the least sensitive we can make it feel, the player has to tilt their controller almost 90 degrees to the direction they want to go
 - sens = np.array([[-10, 60],[0,40],[-200,200]])
 
-### Feature 3: 
+### Feature 3: Vibration Upon Hit (Working 100%)
+- Whenever a player gets hit, the arduino will buzz the buzzer motor
+- When a player is hit, the Socket server will send a "HIT" response back to the Socket client
+- When the client receives this, it sends a "HIT" message to the arduino
+- The arduino will then in turn buzz the motor when it happens
