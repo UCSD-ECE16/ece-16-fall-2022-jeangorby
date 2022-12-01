@@ -38,8 +38,19 @@ class PygameController:
     Z_ZERO = 1950
     refresh_time = 0.01
     previous_time = time()
+
+    ppg_down = False
+    sens = np.array([[-10, 60],[0,40],[-200,200]])
+    sens_counter = 0
+
+    game_start = False
+
+    response = ""
     while True:
+      # Receive message from arduino
       message = self.comms.receive_message()
+
+      
       if(message != None):
         command = None
         try:
@@ -60,43 +71,62 @@ class PygameController:
         result=sqrt(ax**2+az**2)
         result=ay/result
         accel_angle_y = atan(result)*180
-
-        # print(accel_angle_x)
-        if(int(ppg) == -1):
-          print("i am taking shot")
-          command = "FIRE"
-          continue
-        
         current_time = time()
-        if current_time - previous_time > refresh_time:
-          print(accel_angle_x)
-          previous_time = current_time
+
+        # print(accel_angle_y)
+        if int(ppg) == -1 and game_start == False:
+          command = "START"
+          game_start = True
+        elif game_start == True:
           
-          if(int(ppg) < 5000):
-            command = "PAUSE"
-          elif(accel_angle_x < 0):
-            command = "RIGHT"
-          elif(accel_angle_x > 60):
-            command = "LEFT"
+          # PPG Debouncing
+          if int(ppg) < 7000 and ppg_down == False and int(ppg) != -1 and int(ppg) != -2:
+            ppg_down = True
+
+          # Keep track of which sensitivity profile is being used
+          if(int(ppg) == -2 and sens_counter < 2):
+            sens_counter = sens_counter + 1
+          elif(int(ppg) == -2 and game_start == True):
+            sens_counter = 0
+
+          # Prioritze firing over any other command
+          if(int(ppg) == -1):
+            command = "FIRE"
+          # Check for movement/pause/quit every refresh time
+          elif current_time - previous_time > refresh_time and command != "FIRE":
+            previous_time = current_time
+            
+            if(int(ppg) > 7000 and ppg_down == True):
+              ppg_down = False
+              command = "PAUSE"
+            # Sens 1: -10,60; sens 2: 0,40; sens 3: -200,200
+            elif(accel_angle_x < sens[sens_counter][0]):
+              command = "RIGHT"
+            elif(accel_angle_x > sens[sens_counter][1]):
+              command = "LEFT"
+            elif(accel_angle_y < -200):
+              command = "QUIT"
         
-        # message = int(message)
-        # # if message == 0:
-        # #   command = "FLAT"
-        # # if message == 1:
-        # #   command = "UP"
-        # if message == 2:
-        #   command = "FIRE"
-        # elif message == 3:
-        #   command = "RIGHT"
-        # elif message == 4:
-        #   command = "LEFT"
 
         if command is not None:
           mySocket.send(command.encode("UTF-8"))
 
+        # Receive response from the server
+        try:
+          response = mySocket.recv(1024)
+          response = response.decode("utf-8")
+          print("Response: ", response)
+        except BlockingIOError:
+          pass # do nothing if there's no data
+
+        if(response == "HIT"):
+          self.comms.send_message("HIT")
+          response = ""
+
+
 
 if __name__== "__main__":
-  serial_name = "COM3"
+  serial_name = "COM4"
   baud_rate = 115200
   controller = PygameController(serial_name, baud_rate)
 

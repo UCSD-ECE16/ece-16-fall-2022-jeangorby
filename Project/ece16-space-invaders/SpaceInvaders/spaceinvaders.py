@@ -14,7 +14,8 @@ host = "127.0.0.1"
 port = 65432
 mySocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 mySocket.bind((host, port))
-mySocket.setblocking(0)
+mySocket.setblocking(False)
+
 ''' ============================================================ '''
 
 pygame.font.init()
@@ -376,6 +377,7 @@ class SpaceInvaders(object):
         self.life3 = Life(769, 3)
         self.livesGroup = sprite.Group(self.life1, self.life2, self.life3)
         self.timePaused = 0
+        self.sourceAddress = ""
 
     def reset(self, score):
         self.player = Ship()
@@ -476,10 +478,12 @@ class SpaceInvaders(object):
         while temp:
             currentPausePeriod = time.get_ticks() - pauseStartTime
             self.keys = key.get_pressed()
-            my_font = pygame.font.SysFont(FONT, 100)
-            img = my_font.render("GAME IS PAUSED",False, WHITE)
-            self.screen.blit(img, (100, 300))
+            # my_font = pygame.font.SysFont(FONT, 100)
+            # img = my_font.render("GAME IS PAUSED",False, WHITE)
+            # self.screen.blit(img, (100, 300))
             for e in event.get():
+                if self.should_exit(e):
+                    sys.exit()
                 if e.type == KEYDOWN:
                     if e.key == K_p:
                         temp = False
@@ -488,6 +492,7 @@ class SpaceInvaders(object):
                 msg, _ = mySocket.recvfrom(1024) # receive 1024 bytes
                 msg = msg.decode('utf-8')
                 if msg == "PAUSE":
+                    self.timePaused += currentPausePeriod
                     break
 
             except BlockingIOError:
@@ -496,9 +501,10 @@ class SpaceInvaders(object):
     ''' ============================================================ '''
     def check_input_udp_socket(self):
         try:
-            msg, _ = mySocket.recvfrom(1024) # receive 1024 bytes
+            msg, self.sourceAddress = mySocket.recvfrom(1024) # receive 1024 bytes
             msg = msg.decode('utf-8')
             print("Command: " + msg)
+
             
             if msg == "PAUSE":
                 self.paused()
@@ -581,6 +587,7 @@ class SpaceInvaders(object):
         self.screen.blit(self.enemy4, (299, 420))
 
     def check_collisions(self):
+
         sprite.groupcollide(self.bullets, self.enemyBullets, True, True)
 
         for enemy in sprite.groupcollide(self.enemies, self.bullets,
@@ -602,6 +609,15 @@ class SpaceInvaders(object):
 
         for player in sprite.groupcollide(self.playerGroup, self.enemyBullets,
                                           True, True).keys():
+            # Establish connection between the client and server
+            try:
+                msg, self.sourceAddress = mySocket.recvfrom(1024) # receive 1024 bytes
+            except BlockingIOError:
+                pass # do nothing if there's no data
+            
+            # Send HIT response if we get hit
+            mySocket.sendto("HIT".encode("utf-8"), self.sourceAddress) # send the message back
+
             if self.life3.alive():
                 self.life3.kill()
             elif self.life2.alive():
@@ -667,6 +683,23 @@ class SpaceInvaders(object):
                 self.enemy3Text.draw(self.screen)
                 self.enemy4Text.draw(self.screen)
                 self.create_main_menu()
+
+                try:
+                    msg, _ = mySocket.recvfrom(1024) # receive 1024 bytes
+                    msg = msg.decode('utf-8')
+                    if msg == "START":
+                        # Only create blockers on a new game, not a new round
+                        self.allBlockers = sprite.Group(self.make_blockers(0),
+                                                        self.make_blockers(1),
+                                                        self.make_blockers(2),
+                                                        self.make_blockers(3))
+                        self.livesGroup.add(self.life1, self.life2, self.life3)
+                        self.reset(0)
+                        self.startGame = True
+                        self.mainScreen = False
+                except BlockingIOError:
+                    pass # do nothing if there's no data
+
                 for e in event.get():
                     if self.should_exit(e):
                         sys.exit()
