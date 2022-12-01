@@ -21,7 +21,7 @@ through the accelerometer in order to decouple the two actions. This button pres
 order to ensure all button clicks are registered properly as there are usually a lot more movement commands than shoot 
 commands.
 
-![Space Invaders Controller](./images/space%20invaders%20controller.jpg)
+<img src="./images/space invaders controller.jpg" alt="drawing" width="400"/>
 
 ### Improvement 2: Smoother Movement 
 
@@ -94,7 +94,7 @@ without feeling too sensitive. This can be a playstyle for someone who require m
 the controller well. The last option is a throwback option to how the controller was originally programmed and detected
 orientation. The thresholds set for this profile essentially only allows super strict and absolute orientations.
 
-![Second Button](./images/second%20button.jpg)
+<img src="./images/second button.jpg" alt="drawing" width="400"/>
 
 In order to account for each sensitivity profile, we have created a numpy array which stores all the sensitivity 
 thresholds we have as ```sens = np.array([[-10, 60],[0,40],[-200,200]])```. We have also connected a second button on 

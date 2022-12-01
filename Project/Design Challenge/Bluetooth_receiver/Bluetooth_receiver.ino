@@ -16,17 +16,12 @@ void setup() {
 // put your main code here, to run repeatedly:
 void loop() {
   now_time = millis();
-  
-  //writeDisplay("Hello", 0, true);
-  // if(command != ""){
-  //   command = receiveMessage();
-  // }
 
   String command = receiveMessage();
-  if (command != "")
-    sendMessage(command.c_str());
+  // if (command != "")
+  //   sendMessage(command.c_str());
 
-  if(now_time - pre_time >= 1000){
+  //if(now_time - pre_time >= 1000){
   
     if(command == "undetected"){
       digitalWrite(DETECT_PIN, LOW);
@@ -39,14 +34,5 @@ void loop() {
       writeDisplay("detected", 1, true);    
       pre_time = now_time;
     }
-    // else if(command == ""){
-    //   // command is empty
-    //   writeDisplay("0", 3, false);
-    // }
-    // else {
-    //   // commond is other
-    //   writeDisplay("1", 3, false);
-    // }
-  }
-
+  //}
 }
