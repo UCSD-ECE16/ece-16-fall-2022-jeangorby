@@ -131,27 +131,28 @@ program
 # Part 2: Design Challenge
 
 ## YouTube Video Link:
-
+https://youtu.be/bjb9XTIjhfU - Demo
+https://youtu.be/TZH3K5-Sy20 - Need Discussion
 
 ## Need Discussion:
 ### What is the use case that you are trying to address?
 Distraction is a part of the human existence and is inevitable for most humans. Many times distraction can be a good 
 thing especially after a full day of nonstop work. The change of scenery as a result of distraction is often what humans
 need to relax and enjoy a change of pace. However, distraction could also mean disruption and it can even mean the 
-difference between life and death.
+difference between life and death. We want to address the need for something to detect distraction as well as the need to punish the distraction in order to mitigate negative outcomes. 
 
 ### Why is this problem worth addressing?
 Case 1: Many people have the habit of texting while driving <br>
-"According to the National Safety Council, mobile use while driving leads to 1.6 million accidents every year" <br>
+"According to the National Safety Council, mobile use while driving leads to 1.6 million accidents every year". Accidents while driving due to distraction happens more often than ideal. <br>
 
-Case 2: In the day and age of the pandemic, online exams have been more prevalent <br>
+Case 2: In the day and age of the pandemic, online exams have been more prevalent. In person exams can also benefit similarly. <br>
 With that comes the greater number of people cheating on their exams. Online proctoring become a result of the 
 transition to online but many times it is handled by few people who would watch over many students and it is easy to 
-miss a few people cheating. <br>
+miss a few people cheating. Offline proctoring can also benefit by catching cheaters in a similar way. <br>
 
-Case 3: As a student, it is incredibly easy to lose time and sleep due to distraction <br>
+Case 3: As a student and a worker, it is incredibly easy to lose time and sleep due to distraction <br>
 Many times, distraction helps to boost procrastination levels as it is easy to find yourself doing something other than 
-working.
+working. 
 
 ### Who is the intended users?
 - Car Manufacturers
@@ -186,6 +187,19 @@ It was crucial for us to use the ESP3CAM within our design because it was import
 
 ### What was your thought process in the design?
 Our first draft of the design focused on simply making a distraction detector for a student that keeps track of their study environment and checks whether a phone was detected. This is precisely what prompted the design decision to purchase an ESP32CAM and build around it. Later on, we realized that there were more general use cases that can benefit from having a device which can detect phone. We considered the use case of test proctoring. Given the size of the device that we considered earlier, it is easy to utilize our device within a test environment for smart proctoring of an exam. If a student were to pull out their phone during the exam, which is most definitely a breach in academic integrity, then the buzzer will ring to warn whoever is administering the exam. Going back to the idea of the car accidents which have been mentioned throughout the document, the use case of bringing the device into the car to detect driver distraction is now also possible. There is the possibility of selling this device to car manufacturers in order for them to install within their cars can help mitigate car accidents. Our device will warn the driver to look ahead into the road rather than looking at their phone. If a car manufacturer were to install the product, it is likely that consumers are more likely to buy a car for this company as this is a compelling safety feature.
+
+ #1           |      #2     |          #3 
+:-------------------------:|:-------------------------:|:-----------:
+![phone detector](./images/phone_identification_1.jpg) | ![phone detector](./images/phone_identification_2.jpg)| ![phone detector](./images/phone_identification_3.jpg)
+
+> Here we can see 1. Phone within a desk, 2. Phone with a person within the same frame, and 3. Phone with more items on desk<br>
+
+ #4           |       #5     |          #6 
+:-------------------------:|:-------------------------:|:-----------:
+![phone detector](./images/phone_identification_4.jpg) | ![phone detector](./images/phone_identification_5.jpg)| ![phone detector](./images/phone_identification_6.jpg)
+
+> Here we can see 4. Phone with a more crowded desk, 5. Phone while it is actively being used by a person, and 6. Two Phones <br>
+
 
 # Division of Labor
 
