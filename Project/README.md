@@ -60,6 +60,8 @@ the game even starts.
 - Placing finger on photodetector again wil unpause the game
 - One can hit the escape key while paused if they want to exit the game
 
+![pause](./images/pause%20gif.gif)
+
 In order to detect whether a finger is placed on the photodetector, we continously send the ppg data from the ESP32 to 
 the python program. When the finger isn't on the photodetector, the PPG value is typically very high (around 32k). 
 Placing the finger on the photodetector drops this value down to less than 5k. We check whenever the value drops with 
