@@ -55,7 +55,7 @@ the game even starts.
 
 ## Features
 
-### Feature 1: Pause/Unpause 
+### Feature 1: Pause/Unpause (Working 100%)
 - Placing finger on photodetector will pause the game
 - Placing finger on photodetector again wil unpause the game
 - One can hit the escape key while paused if they want to exit the game
